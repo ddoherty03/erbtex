@@ -1,0 +1,20 @@
+#! /usr/bin/env ruby
+
+# This adds our lib subdirectory to the ruby load path
+$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
+
+require 'erbtex'
+
+progname = File.basename($0)
+commandline = progname + ' ' + ARGV.join(' ')
+puts "Program name: #{progname}"
+puts "Command line: #{commandline}"
+puts 'ARGV:'
+ARGV.each do |a|
+  puts "Argument: #{a}"
+end
+puts 'PATH:'
+ENV['PATH'].split(':').each do |p|
+  puts p
+end
+puts "Executable: " + ErbTeX.find_binary($0)

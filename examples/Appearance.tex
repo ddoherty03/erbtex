@@ -1,0 +1,34 @@
+\documentclass[NY-SD,motion,sign]{litigation}
+
+<%
+require 'legal'
+require 'ded'
+require './CaseData'
+
+$doc = Document.new('Notice of Appearance')
+$doc.case = $cs
+$doc.signer = $ded
+$doc.server = $ded
+$doc.sig_date = '2006-10-03'
+$doc.service_date = $doc.sig_date
+%>
+
+<%= $doc.tex_macros %>
+
+\begin{document}
+\Caption
+
+Please note my appearance as additional counsel for plaintiff in the
+above-captioned case.
+
+\FullSignature
+
+\CertificateOfService
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
+

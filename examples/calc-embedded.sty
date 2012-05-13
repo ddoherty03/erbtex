@@ -1,0 +1,12 @@
+
+%% This makes => print as in calc, not as ->
+\renewcommand{\to}{\Rightarrow}
+
+%% These are needed to handle the TeX form of the => operator
+%% output by calc.
+\newcommand{\evalto}[1]{#1}
+%%\def\evalto#1\to{}
+
+%% LaTeX language mode assumes certain commands from
+%% AmSMath, e.g., \begin{pmatrix}.
+\usepackage{amsmath}

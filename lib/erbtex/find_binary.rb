@@ -16,11 +16,16 @@ module ErbTeX
   # programs that want to invoke pdflatex will still work, except that
   # we'll sneak in and do ruby pre-processing before invoking the real
   # program.
+
+  # If the calling program is 'erbtex', treat it as 'pdflatex' just as
+  # if it were a pdflatex link to erbtex
   
   def ErbTeX.find_binary(calling_prog)
     calling_prog = File.absolute_path(calling_prog)
     call_path = File.dirname(calling_prog)
     call_base = File.basename(calling_prog)
+    call_path = call_path.sub(/erbtex$/, 'pdflatex')
+    call_base = call_base.sub(/erbtex$/, 'pdflatex')
     ENV['PATH'].split(':').each do |p|
       next unless File.directory?(p)
       next if File.absolute_path(p) == call_path
@@ -31,5 +36,6 @@ module ErbTeX
         end
       end
     end
+    nil
   end
 end

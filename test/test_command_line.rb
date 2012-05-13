@@ -18,7 +18,7 @@ class CommandLineTest < Test::Unit::TestCase
     @junk3_tex = @tex_dir_nw + '/junk3.tex'
     FileUtils.touch(@junk3_tex)
     FileUtils.chmod(0500, @tex_dir_nw)
-end
+  end
 
   def teardown
     FileUtils.rm(@junk_tex)
@@ -33,12 +33,47 @@ end
            CommandLine.new(cl).input_file)
   end
 
+  def test_find_input_file_relative
+    cl = 'pdflatex -ini --halt-on-error ./junk.tex'
+    assert_equal("./junk.tex",
+           CommandLine.new(cl).input_file)
+  end
+
+  def test_find_input_file_relative_no_ext
+    cl = 'pdflatex -ini --halt-on-error ./junk'
+    assert_equal("./junk.tex",
+           CommandLine.new(cl).input_file)
+  end
+
   def test_find_ordinary_input_file_with_ext
     cl = 'pdflatex -ini --halt-on-error junk.tex'
     assert_equal("junk.tex",
            CommandLine.new(cl).input_file)
   end
 
+  def test_find_ordinary_input_file_with_spaces
+    fn = 'A junk.tex'
+    FileUtils.touch(fn)
+    cl = "pdflatex -ini --halt-on-error \'#{fn}\'"
+    assert_equal("A junk.tex",
+           CommandLine.new(cl).input_file)
+    FileUtils.rm(fn)
+  end
+
+  def test_no_input_file
+    assert_raise ErbTeX::NoInputFile do
+      cl = 'pdflatex -ini'
+      CommandLine.new(cl)
+    end
+  end
+
+  def test_no_input_file_with_eq
+    assert_raise ErbTeX::NoInputFile do
+      cl = 'pdflatex -ini -output-directory=/tmp'
+      CommandLine.new(cl).input_file
+    end
+  end
+  
   def test_find_progname
     cl = 'pdflatex -ini --halt-on-error junk.tex'
     assert_equal("pdflatex",
@@ -47,14 +82,28 @@ end
   
   def test_mark_command_line
     cl = 'pdflatex -ini --halt-on-error junk'
-    clm = 'pdflatex -ini --halt-on-error ^f^'
+    clm = '^p^ -ini --halt-on-error ^f^'
     assert_equal(clm,
            CommandLine.new(cl).marked_command_line)
   end
   
   def test_mark_command_line_with_ext
     cl = 'pdflatex -ini --halt-on-error junk.tex'
-    clm = 'pdflatex -ini --halt-on-error ^f^'
+    clm = '^p^ -ini --halt-on-error ^f^'
+    assert_equal(clm,
+           CommandLine.new(cl).marked_command_line)
+  end
+  
+  def test_mark_command_line_with_dir
+    cl = 'pdflatex -ini --halt-on-error ~/junk.tex'
+    clm = '^p^ -ini --halt-on-error ^f^'
+    assert_equal(clm,
+           CommandLine.new(cl).marked_command_line)
+  end
+  
+  def test_mark_command_line_with_spaces
+    cl = 'pdflatex -ini --halt-on-error \'/home/ded/A junk.tex\''
+    clm = '^p^ -ini --halt-on-error ^f^'
     assert_equal(clm,
            CommandLine.new(cl).marked_command_line)
   end
@@ -78,9 +127,12 @@ end
   end
 
   def test_find_input_file_with_spaces
-    cl = 'pdflatex -ini --halt-on-error \input "my junk2.tex"'
-    assert_equal("my junk2.tex",
-           CommandLine.new(cl).input_file)
+    fn = "my junk2.tex"
+    FileUtils.touch(fn)
+    cl = "pdflatex -ini --halt-on-error \input \"#{fn}\""
+    assert_equal(fn,
+                 CommandLine.new(cl).input_file)
+    FileUtils.rm(fn)
   end
 
   def test_find_input_path_existing
@@ -91,7 +143,9 @@ end
 
   def test_dont_find_input_path_non_existing
     cl = 'pdflatex -ini --halt-on-error \input junk3.tex'
-    assert_nil(CommandLine.new(cl).input_path)
+    assert_raise NoInputFile do
+      CommandLine.new(cl).input_path
+    end
   end
 
   def test_find_full_path_with_env
@@ -104,12 +158,12 @@ end
   end
 
   def test_find_output_dir
-    cl = 'pdflatex -ini --halt-on-error \input junk3.tex'
+    cl = 'pdflatex -ini --halt-on-error \input junk.tex'
     assert_equal(File.expand_path('./'), CommandLine.new(cl).output_dir)
   end
 
   def test_find_output_dir_with_options
-    cl = 'pdflatex -ini -output-d=~/tmp \input junk3.tex'
+    cl = 'pdflatex -ini -output-d=~/tmp \input junk.tex'
     assert_equal(File.expand_path('~/tmp'), CommandLine.new(cl).output_dir)
   end
 

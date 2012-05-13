@@ -4,17 +4,28 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
 
 require 'erbtex'
+require 'ruby-debug'
 
 progname = File.basename($0)
-commandline = progname + ' ' + ARGV.join(' ')
-puts "Program name: #{progname}"
-puts "Command line: #{commandline}"
-puts 'ARGV:'
+commandline = progname
 ARGV.each do |a|
-  puts "Argument: #{a}"
+  if a =~ /\s/
+    a = "'" + a + "'"
+  end
+  commandline += " #{a}"
 end
-puts 'PATH:'
-ENV['PATH'].split(':').each do |p|
-  puts p
-end
-puts "Executable: " + ErbTeX.find_binary($0)
+
+# puts "Program name: #{progname}"
+# puts "Command line: #{commandline}"
+# puts 'ARGV:'
+# ARGV.each do |a|
+#   puts "Argument: #{a}"
+# end
+# puts 'PATH:'
+# ENV['PATH'].split(':').each do |p|
+#   puts p
+# end
+# puts "Executable: "
+# puts ErbTeX.find_binary($0)
+
+puts ErbTeX.run(commandline)

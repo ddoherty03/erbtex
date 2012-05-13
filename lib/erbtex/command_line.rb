@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 module ErbTeX
+  class NoInputFile < StandardError; end
+  
   class CommandLine
     attr_reader :command_line, :marked_command_line, :input_file
     attr_reader :progname, :input_path, :output_dir
@@ -16,6 +18,10 @@ module ErbTeX
     
     def find_progname
       @progname = @command_line.split(' ')[0]
+      # if @progname =~ /erbtex$/
+      #   @progname = @progname.sub('erbtex', 'pdflatex')
+      #   @command_line = @command_line.sub('erbtex', 'pdflatex')
+      # end
     end
     
     def find_output_dir
@@ -50,41 +56,72 @@ module ErbTeX
     end
 
     def find_input_file
-      infile_re = %r{(\\input\s+)?(([-_/A-Za-z0-9]+)(\.[a-z]+)?)\s*$}
-      if @command_line =~ infile_re
+      # Remove the initial command from the command line
+      cmd = @command_line[@command_line.index(/\s/)..-1]
+      cmd = cmd.gsub(/\s+--?[-a-zA-Z]+(=\S+)?/, ' ')
+      infile_re = %r{(\\input\s+)?(([-.~_/A-Za-z0-9]+)(\.[a-z]+)?)\s*$}
+      if cmd =~ infile_re
         @input_file = "#{$2}"
         if @input_file !~ /\.tex$/
           @input_file += ".tex"
         end          
-      elsif @command_line =~ %r{(\\input\s+)?(["'])((?:\\?.)*?)\2} #"
+      elsif cmd =~ %r{(\\input\s+)?(["'])((?:\\?.)*?)\2} #"
         # The re above captures single- or double-quoted strings with
         # the insides in $3
         @input_file = "#{$3}"
         if @input_file !~ /\.tex$/
-          @input_file += ".tex"
+          @input_file += ".tex#{$1}"
         end          
       else
-        raise "Can't find input file in #{@command_line}"
+        raise NoInputFile, "Can't find input file name in command:\n'#{@command_line}'"
       end
     end
 
     def find_input_path
-      # The following cribbed from kpathsea.rb
-      @progname.untaint
-      @input_file.untaint
-      kpsewhich = "kpsewhich -progname=\"#{@progname}\" -format=\"tex\" #{@input_file}"
-      lines = ""
-      IO.popen(kpsewhich) do |io|
-        lines = io.readlines
+      # If input_file is absolute, don't look further
+      if @input_file =~ /^\//
+        @input_path = @input_file
+      else
+        # The following cribbed from kpathsea.rb
+        @progname.untaint
+        @input_file.untaint
+        kpsewhich = "kpsewhich -progname=\"#{@progname}\" -format=\"tex\" \"#{@input_file}\""
+        lines = ""
+        IO.popen(kpsewhich) do |io|
+          lines = io.readlines
+        end
+        if $? == 0
+          @input_path = lines[0].chomp.untaint
+        else
+          raise NoInputFile, "Can't find #{@input_file} in TeX search path; try kpsewhich -format=tex #{@input_file}."
+        end
       end
-      @input_path = ($? == 0 ? lines[0].chomp.untaint : nil)
+    end
+    
+    def new_command_line(new_progname, new_infile)
+      ncl = @marked_command_line.sub('^p^', new_progname)
+      # unless new_infile =~ /^\//
+      #   new_infile = @input_path + new_infile
+      # end
+      # Quote the new_infile in case it has spaces
+      ncl.sub('^f^', "'#{new_infile}'")
     end
     
     def mark_command_line
-      infile_re = %r{(\\input\s+)?(([-_A-Za-z0-9]+)(\.[a-z]+)?)\s*$}
+      # Replace input file with '^f^'
+      infile_re = %r{(\\input\s+)?(([-.~_/A-Za-z0-9]+)(\.[a-z]+)?)\s*$}
+      quoted_infile_re = %r{(\\input\s+)?(["'])((?:\\?.)*?)\2} #"
+      #debugger
       if @command_line =~ infile_re
         @marked_command_line = @command_line.sub(infile_re, "#{$1}^f^")
+      elsif @command_line =~ quoted_infile_re
+        @marked_command_line = @command_line.sub(quoted_infile_re, "#{$1}^f^")
+      else
+        @marked_command_line = @command_line
       end
+      # Replace progname with '^p^'
+      @marked_command_line = @marked_command_line.lstrip
+      @marked_command_line = @marked_command_line.sub(/\S+/, '^p^')
     end
   end
 end

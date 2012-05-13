@@ -1,3 +1,5 @@
+require 'tempfile'
+
 module ErbTeX
   # When we are handed a command line, it will be one that was
   # originally intended for the real tex processor, e.g., pdflatex.
@@ -13,10 +15,18 @@ module ErbTeX
   #
   # Perhaps change the Erubis pattern to something like .{ }. so that
   # AucTeX does not get confused with the comment character used in
-  # Erubis by default (<%= %>).
+  # Erubis by default (<%= %>).  Erubis -p commandline would use the
+  # switch -p '\.{ }\.' But adapt if old pattern style is found in the
+  # input.
   # 
   # If there are no Erubis patterns in the file, skip the Erubis phase
   # and just pass the original command on to the system.
+  #
+  # But wait.  What if there are \include{file} or \input file
+  # statements in the input and those have Erubis patterns in them?  We
+  #  have to invoke erbtex recursively on those, replacing the
+  # orginal with a processed temporary and patching up the
+  # \include{tmp-file}, and so on.
   #
   # If there is an error in the Erubis phase, we want the error message
   # to make it clear what happened and exit without invoking the tex
@@ -26,53 +36,64 @@ module ErbTeX
   # on our processed .etx file and otherwise leave the commandline
   # intact.
   # 
-  def run
-    case File.extname(@file)
-    when ''
-      erb_file = "#{@file}.tex"
-      erb_base = File.basename(erb_file, '.tex')
-    when '.tex'
-      erb_file = @file
-      erb_base = File.basename(erb_file, '.tex')
-    when '.texi'
-      erb_file = @file
-      erb_base = File.basename(erb_file, '.texi')
+  def ErbTeX.run(command)
+    begin 
+      cl = CommandLine.new(command)
+      new_infile = process(cl.input_file, cl.input_path)
+      new_progname = ErbTeX.find_binary(command.lstrip.split(' ')[0])
+      cmd = cl.new_command_line(new_progname, new_infile)
+      puts "Executing: #{cmd}"
+      system(cmd)
+    rescue ErbTeX::NoInputFile
+      $stderr.puts "ErbTeX Error: " + $!.message
+      exit 1
+    end
+  end
+
+  # Run erbtex on the content of file_name, a String, and return the
+  # name of the file where the processed content can be found.  This
+  # could be the orignal file name if no processing was needed, or a
+  # temporary file if the pattern is found anywhere in the file.
+  def ErbTeX.process(file_name, dir)
+    puts "Input path: #{dir}"
+    contents = nil
+    File.open(file_name) do |f|
+      contents = f.read
+    end
+    # TODO: recurse through any \input or \include commands
+    
+    # Detect which pattern is used.
+    # Do nothing if the Erubis patterns are not present
+    pat = nil
+    if contents =~ Regexp.new('\.{.*?}\.')
+      pat = '\.{ }\.'
+    elsif contents =~ Regexp.new('<%.*?%>')
+      pat = '<% %>'
     else
-      raise "File #{@file} must have '.tex' or 'texi' extension."
-    end
-    erb_file = File.expand_path(erb_file)
-    unless File.readable?(erb_file)
-      raise "File #{erb_file} not readable"
+      return file_name
     end
 
-    # Run ERB, then TeX processor
-    tex_file = "#{erb_base}.etx"
-    if process(erb_file, tex_file)
-      commandline = "#{@texprog} #{@texopts}"
-      commandline = commandline.sub(/\^f\^/, tex_file)
-      commandline = commandline.gsub(/([^ \t]+)/, '\'\1\'')
-      puts "TeX Command: #{commandline}\n"
-      # Remove /usr/local/bin from PATH before execution,
-      # so we don't invoke erbtex again via a symlink
-      path = ENV['PATH'].split(':')
-      path.delete("/usr/local/bin")
-      path = path.join(':')
-      system({'PATH' => path}, "#{commandline}")
+    # Otherwise process the contents
+    # Find a writable directory, prefering the one the input file came
+    # from, or the current directory, and a temp file as a last resort.
+    file_absolute = File.absolute_path(File.expand_path(file_name))
+    file_dir = File.dirname(file_absolute)
+    file_base = File.basename(file_absolute, '.tex')
+    of = nil
+    if File.writable?(file_dir)
+      out_file = file_dir + '/' + file_base + '.etx'
+    elsif File.writable?('.')
+      out_file = './' + file_base + '.etx'
+    else
+      of = Tempfile.new([File.basename(file_name), '.etx'])
+      out_file = of.path
     end
+    unless of
+      of = File.open(out_file, 'w+')
+    end
+    er = Erubis::Eruby.new(contents, :pattern => pat)
+    of.write(er.result)
+    of.close
+    out_file
   end
-
-  def process(in_file, out_file)
-    unless File.new(out_file, "a")
-      raise "Cannot write to output file #{out_file} in #{Dir.getwd}\n"
-    end
-    # Process with erubis, testing for ruby syntax errors first
-    #status = system("erubis -z #{erubyopts} \"#{in_file}\" >/dev/null 2>&1")
-    erubis_command = "erubis \"#{in_file}\" >\"#{out_file}\""
-    puts "Erubis Command: #{erubis_command}"
-    status = system(erubis_command)
-    unless (status)
-      STDERR.print "Problem with erubis syntax check.\n"
-    end
-    return status
-  end
-end
+end  

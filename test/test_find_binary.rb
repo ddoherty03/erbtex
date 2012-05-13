@@ -45,4 +45,9 @@ class FindBinaryTest < Test::Unit::TestCase
     assert_equal(@real_binary,
                  ErbTeX.find_binary(@fake_binary))
   end
+
+  def test_find_pdflatex_with_erbtex
+    assert_equal(@real_binary,
+                 ErbTeX.find_binary(@erbtex))
+  end
 end

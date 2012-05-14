@@ -20,15 +20,18 @@
 %% function keep the number of digits after the decimal
 %% place at the right level to come out to 9 digits in total
 %% both before and after the decimal point.  
-<%  def digs(x)
+.{  def digs(x)
       if ("%0.8f" % x) =~ /[-+]?([0-9]*)\./
-        l = 10 - $1.length
+        l = 10 - $1.length  #$ This comment keeps syntax highlighting in emacs
+                            # from getting confused.  The single dollar
+                            # sign makes it think is in math mode.
+                            # Occasionally needed when ruby and LaTeX mix.
         l = (l > 0 ? l : 0)
         return l
       end
       return(0)
     end
-%>
+}.
 
 %% Set up the longtable environment by specifying the header for
 %% each page and the footer.
@@ -46,40 +49,40 @@
 \hline\hline
 \endfoot
 
-<%
+.{
 ## Set up variables needed for computing the values that go into
 ## the table, taking care to use ruby's BigDecimal class to ensure
 ## accuracy.  The table is set up here to go from 0 to pi/2 in
-## increments of 0.0001.
+## increments of step
 
    require 'bigdecimal'
-   step = BigDecimal.new("0.0001")
+   step = BigDecimal.new("0.001")
    one = BigDecimal("1.0")
    z0 = BigDecimal("0.0")
    p2 = BigDecimal.new((Math::PI / 2.0).to_s)
--%>
+-}.
 
 %% Treat the first line of the table, for an x value of 0 specially
 %% by giving exact answers in symbolic form.
-<%= "\\multicolumn{1}{c|}{{\\mathversion{bold}\\mark{0}$0$}}" %>&
-<%= "\\multicolumn{1}{c}{{$0$}}" %>&
-<%= "\\multicolumn{1}{c}{{$1$}}" %>&
-<%= "\\multicolumn{1}{c}{{$0$}}" %>&
-<%= "\\multicolumn{1}{c}{{$\\infty$}}" %>&
-<%= "\\multicolumn{1}{c}{{$1$}}" %>&
-<%= "\\multicolumn{1}{c}{{$\\infty$}}" %>\\
+.{= "\\multicolumn{1}{c|}{{\\mathversion{bold}\\mark{0}$0$}}" }.&
+.{= "\\multicolumn{1}{c}{{$0$}}" }.&
+.{= "\\multicolumn{1}{c}{{$1$}}" }.&
+.{= "\\multicolumn{1}{c}{{$0$}}" }.&
+.{= "\\multicolumn{1}{c}{{$\\infty$}}" }.&
+.{= "\\multicolumn{1}{c}{{$1$}}" }.&
+.{= "\\multicolumn{1}{c}{{$\\infty$}}" }.\\
 
 %% Here is the loop for the body of the table, which starts with
 %% x one step beyond 0 and pre-computes some of the functions
-<%   x = z0 + step
+.{   x = z0 + step
      while (x < p2) do
       tanx = BigDecimal.new(Math.tan(x).to_s)
       cotx = one / BigDecimal.new(Math.tan(x).to_s)
       secx = one / BigDecimal.new(Math.cos(x).to_s)
       cscx = one / BigDecimal.new(Math.sin(x).to_s)
-%>
+}.
 
-<%
+.{
 ## Here is where each line of the main body of the table is set.
 ## We use the digs function defined above to make sure that every
 ## column as the same number of significant digits for the functions
@@ -90,32 +93,32 @@
 ## TrigTable.etx.  Doing so made that file about 6MB in size; by
 ## putting the comments inside this ruby code block, the size was 
 ## around 2MB.
--%>
-<% xf = "%0.4f" % x %>
-\mark{<%= xf %>}
-<%= "\\mathversion{bold}$%0.4f$" % x %>&
-<%= "$%0.8f$" % Math.sin(x) %>&
-<%= "$%0.8f$" % Math.cos(x) %>&
-<%= "$%0.*f$" % [ digs(tanx), tanx ] %>&
-<%= "$%0.*f$" % [ digs(cotx), cotx ] %>&
-<%= "$%0.*f$" % [ digs(secx), secx ] %>&
-<%= "$%0.*f$" % [ digs(cscx), cscx ] %>\\
+-}.
+.{ xf = "%0.4f" % x }.
+\mark{.{= xf }.}
+.{= "\\mathversion{bold}$%0.4f$" % x }.&
+.{= "$%0.8f$" % Math.sin(x) }.&
+.{= "$%0.8f$" % Math.cos(x) }.&
+.{= "$%0.*f$" % [ digs(tanx), tanx ] }.&
+.{= "$%0.*f$" % [ digs(cotx), cotx ] }.&
+.{= "$%0.*f$" % [ digs(secx), secx ] }.&
+.{= "$%0.*f$" % [ digs(cscx), cscx ] }.\\
 
 %% Step and loop
-<%  
+.{  
       x += step
     end 
-%>
+}.
 
 %% Finally, treat the last row of the table for pi/2 specially
 %% by giving exact values symbolically.
-<%= "\\multicolumn{1}{c}{{\\mark{\\pi/{2}}\\mathversion{bold}$\\pi/{2}$}}" %>&
-<%= "\\multicolumn{1}{c}{$1$}" %>&
-<%= "\\multicolumn{1}{c}{$0$}" %>&
-<%= "\\multicolumn{1}{c}{$\\infty$}" %>&
-<%= "\\multicolumn{1}{c}{$0$}" %>&
-<%= "\\multicolumn{1}{c}{$\\infty$}" %>&
-<%= "\\multicolumn{1}{c}{$1$}" %>\\
+.{= "\\multicolumn{1}{c}{{\\mark{\\pi/{2}}\\mathversion{bold}$\\pi/{2}$}}" }.&
+.{= "\\multicolumn{1}{c}{$1$}" }.&
+.{= "\\multicolumn{1}{c}{$0$}" }.&
+.{= "\\multicolumn{1}{c}{$\\infty$}" }.&
+.{= "\\multicolumn{1}{c}{$0$}" }.&
+.{= "\\multicolumn{1}{c}{$\\infty$}" }.&
+.{= "\\multicolumn{1}{c}{$1$}" }.\\
 
 %% End the table and document---this version comes to 315 pages!
 \end{longtable}

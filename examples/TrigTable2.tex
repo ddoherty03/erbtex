@@ -20,15 +20,15 @@
 %% function keep the number of digits after the decimal
 %% place at the right level to come out to 9 digits in total
 %% both before and after the decimal point.  
-<%  def digs(x)
+.{  def digs(x)
       if ("%0.8f" % x) =~ /[-+]?([0-9]*)\./
-        l = 10 - $1.length
+        l = 10 - $1.length  #$
         l = (l > 0 ? l : 0)
         return l
       end
       return(0)
     end
-%>
+}.
 
 %% Set up the longtable environment by specifying the header for
 %% each page and the footer.
@@ -46,42 +46,42 @@
 \hline\hline
 \endfoot
 
-<%
+.{
 ## Set up variables needed for computing the values that go into
 ## the table, taking care to use ruby's BigDecimal class to ensure
 ## accuracy.  The table is set up here to go from 0 to pi/2 in
-## increments of 0.0001.
+## increments of step.
 
    require 'bigdecimal'
    require './dms'
    DMS.precision = 0
-   step = DMS.new(0, 0, 10)
+   step = DMS.new(0, 0, 30)
    one = BigDecimal("1.0")
    d0 = DMS.new(0)
    d90 = DMS.new(90)
--%>
+-}.
 
 %% Treat the first line of the table, for an x value of 0 specially
 %% by giving exact answers in symbolic form.
-<%= "\\multicolumn{1}{c|}{{\\mathversion{bold}\\mark{%s}$0$}}" % d0.to_tex %>&
-<%= "\\multicolumn{1}{c}{{$0$}}" %>&
-<%= "\\multicolumn{1}{c}{{$1$}}" %>&
-<%= "\\multicolumn{1}{c}{{$0$}}" %>&
-<%= "\\multicolumn{1}{c}{{$\\infty$}}" %>&
-<%= "\\multicolumn{1}{c}{{$1$}}" %>&
-<%= "\\multicolumn{1}{c}{{$\\infty$}}" %>\\
+.{= "\\multicolumn{1}{c|}{{\\mathversion{bold}\\mark{%s}$0$}}" % d0.to_tex }.&
+.{= "\\multicolumn{1}{c}{{$0$}}" }.&
+.{= "\\multicolumn{1}{c}{{$1$}}" }.&
+.{= "\\multicolumn{1}{c}{{$0$}}" }.&
+.{= "\\multicolumn{1}{c}{{$\\infty$}}" }.&
+.{= "\\multicolumn{1}{c}{{$1$}}" }.&
+.{= "\\multicolumn{1}{c}{{$\\infty$}}" }.\\
 
 %% Here is the loop for the body of the table, which starts with
 %% x one step beyond 0 and pre-computes some of the functions
-<%   x = d0 + step
+.{   x = d0 + step
      while (x < d90) do
       tanx = x.tan
       cotx = x.cotan
       secx = x.sec
       cscx = x.csc
-%>
+}.
 
-<%
+.{
 ## Here is where each line of the main body of the table is set.
 ## We use the digs function defined above to make sure that every
 ## column as the same number of significant digits for the functions
@@ -92,21 +92,21 @@
 ## TrigTable.etx.  Doing so made that file about 6MB in size; by
 ## putting the comments inside this ruby code block, the size was 
 ## around 2MB.
--%>
-\mark{<%= x.to_tex %>}
-<%= "\\mathversion{bold}#{x.to_tex}" %>&
-<%= "$%0.8f$" % x.sin %>&
-<%= "$%0.8f$" % x.cos %>&
-<%= "$%0.*f$" % [ digs(tanx), tanx ] %>&
-<%= "$%0.*f$" % [ digs(cotx), cotx ] %>&
-<%= "$%0.*f$" % [ digs(secx), secx ] %>&
-<%= "$%0.*f$" % [ digs(cscx), cscx ] %>\\
+-}.
+\mark{.{= x.to_tex }.}
+.{= "\\mathversion{bold}#{x.to_tex}" }.&
+.{= "$%0.8f$" % x.sin }.&
+.{= "$%0.8f$" % x.cos }.&
+.{= "$%0.*f$" % [ digs(tanx), tanx ] }.&
+.{= "$%0.*f$" % [ digs(cotx), cotx ] }.&
+.{= "$%0.*f$" % [ digs(secx), secx ] }.&
+.{= "$%0.*f$" % [ digs(cscx), cscx ] }.\\
 
 %% Step and loop
-<%  
+.{  
       x += step
     end 
-%>
+}.
 
 %% This causes a LaTeX error, but nonetheless gets the final line of
 %% the table squeezed onto the last page instead of on a page by
@@ -115,14 +115,14 @@
 
 %% Finally, treat the last row of the table for pi/2 specially
 %% by giving exact values symbolically.
-<%= "\\multicolumn{1}{c|}{\\mark{%s}\\mathversion{bold}%s}" %
- [d90.to_tex, d90.to_tex]  %>&
-<%= "\\multicolumn{1}{c}{$1$}" %>&
-<%= "\\multicolumn{1}{c}{$0$}" %>&
-<%= "\\multicolumn{1}{c}{$\\infty$}" %>&
-<%= "\\multicolumn{1}{c}{$0$}" %>&
-<%= "\\multicolumn{1}{c}{$\\infty$}" %>&
-<%= "\\multicolumn{1}{c}{$1$}" %>\\
+.{= "\\multicolumn{1}{c|}{\\mark{%s}\\mathversion{bold}%s}" %
+ [d90.to_tex, d90.to_tex]  }.&
+.{= "\\multicolumn{1}{c}{$1$}" }.&
+.{= "\\multicolumn{1}{c}{$0$}" }.&
+.{= "\\multicolumn{1}{c}{$\\infty$}" }.&
+.{= "\\multicolumn{1}{c}{$0$}" }.&
+.{= "\\multicolumn{1}{c}{$\\infty$}" }.&
+.{= "\\multicolumn{1}{c}{$1$}" }.\\
 
 %% End the table and document---this version comes to 649 pages!
 \end{longtable}

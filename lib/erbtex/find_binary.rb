@@ -1,5 +1,3 @@
-require 'ruby-debug'
-
 module ErbTeX
   # Find the first executable file in the PATH that is the same
   # basename, but not the same absolute name as calling_prog.  If this

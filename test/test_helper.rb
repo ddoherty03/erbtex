@@ -7,4 +7,4 @@ $:.unshift lib_dir unless $:.include?(lib_dir)
 require 'test/unit'
 require 'erbtex'
 require 'fileutils'
-require 'ruby-debug'
+

@@ -3,4 +3,5 @@
 *.etx
 *.out
 *.pdf
+*.gem
 auto

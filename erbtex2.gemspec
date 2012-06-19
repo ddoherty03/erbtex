@@ -10,5 +10,5 @@ Gem::Specification.new do |s|
                      between .{ and }. markers, greatly expanding the ability to generate
                      automated TeX and LaTeX documents.}
   s.files = Dir.glob(['./*', './*/**'])
-  s.files.delete_if {|f| f =~ /(log|etc|aux)$/}
+  s.files.delete_if {|f| f =~ /(log|etc|aux|etx|pdf|gem)$/}
 end

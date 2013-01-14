@@ -19,7 +19,7 @@
 %% This function is a utility to help the sprintf
 %% function keep the number of digits after the decimal
 %% place at the right level to come out to 9 digits in total
-%% both before and after the decimal point.  
+%% both before and after the decimal point.
 .{  def digs(x)
       if ("%0.8f" % x) =~ /[-+]?([0-9]*)\./
         l = 10 - $1.length  #$
@@ -53,7 +53,7 @@
 ## increments of step.
 
    require 'bigdecimal'
-   require './dms'
+   require 'dms'
    DMS.precision = 0
    step = DMS.new(0, 0, 30)
    one = BigDecimal("1.0")
@@ -90,7 +90,7 @@
 ## NB: I could write this comment as a LaTeX comment outside a code
 ## segment, but then it would end up in the generated LaTeX file,
 ## TrigTable.etx.  Doing so made that file about 6MB in size; by
-## putting the comments inside this ruby code block, the size was 
+## putting the comments inside this ruby code block, the size was
 ## around 2MB.
 -}.
 \mark{.{= x.to_tex }.}
@@ -103,9 +103,9 @@
 .{= "$%0.*f$" % [ digs(cscx), cscx ] }.\\
 
 %% Step and loop
-.{  
+.{
       x += step
-    end 
+    end
 }.
 
 %% This causes a LaTeX error, but nonetheless gets the final line of

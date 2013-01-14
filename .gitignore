@@ -4,4 +4,6 @@
 *.out
 *.pdf
 *.gem
+etc
 auto
+/.bundle/config

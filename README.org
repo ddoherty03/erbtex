@@ -1,0 +1,22 @@
+erbtex is a ruby gem that pre-processes TeX and LaTeX source files
+with ruby's erubis and then passes the resulting file along to a real
+TeX program.
+
+Install it with
+#+begin_src shell
+  gem install erbtex
+#+end_src
+
+After the gem is installed, erbtex is placed in your PATH in front of
+the real TeX and LaTeX programs.  It is linked to the names pdflatex,
+tex, pdftex, and so forth, so that it can be invoked with those names
+on the input file.  It will read the source and execute any ruby code
+between the markers '{.' and '.}'.  It will then find the real program
+further along your path and run it on the pre-processed output.
+
+For example, the following LaTeX file will produce a table of square
+roots when run through erbtex:
+
+#+begin_quote
+
+#+end_quote

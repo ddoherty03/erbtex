@@ -1,0 +1,29 @@
+\documentclass{article}
+
+\usepackage[mathbf]{euler}
+\usepackage{longtable}
+\usepackage{geometry}
+\geometry{hmargin=0.5in,vmargin=1.2in}
+
+\begin{document}
+
+\begin{longtable}[c]{l|llllll}
+\hline\hline
+\multicolumn{1}{c|}{\mathversion{bold}$x$}&
+\multicolumn{1}{c}{\mathversion{bold}$\sqrt{x}$}\\
+\hline\hline
+\endhead
+\hline\hline
+\endfoot
+
+%% Here is the loop for the body of the table, which starts with
+%% x one step beyond 0 and pre-computes some of the functions
+.{   0.upto(100).each do |x| }.
+.{= "\\mathversion{bold}$%0.4f$" % x }.&
+.{= "$%0.8f$" % Math.sqrt(x) }.\\
+
+.{end}.
+
+%% End the table and document---this version comes to 315 pages!
+\end{longtable}
+\end{document}

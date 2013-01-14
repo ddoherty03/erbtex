@@ -21,7 +21,7 @@ further along your path and run it on the pre-processed output.
 * Example
 For example, the following LaTeX file will produce a table of square
 roots when run through erbtex:
-#+begin_quote
+#+begin_src ruby
 \documentclass{article}
 \usepackage[mathbf]{euler}
 \usepackage{longtable}

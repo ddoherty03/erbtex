@@ -1,11 +1,8 @@
 require 'test_helper'
 
-require 'ruby-debug/pry'
-require 'pry-nav'
-
 class FindBinaryTest < Test::Unit::TestCase
   include ErbTeX
-  
+
   # Here we set up the situation as we expect it to be after
   # installation.  There is a "real" pdflatex executable binary and
   # there is one that is just a link to our script, the "fake" binary.
@@ -22,7 +19,7 @@ class FindBinaryTest < Test::Unit::TestCase
     FileUtils.chmod(0700, @erbtex)
     FileUtils.rm_rf(@fake_binary) if File.exists?(@fake_binary)
     FileUtils.ln_s(@erbtex, @fake_binary)
-    
+
     # Create a "real" pdflatex to find
     @real_binary = 'bin/pdflatex'
     FileUtils.rm_rf('bin') if File.exists?('bin')
@@ -40,7 +37,7 @@ class FindBinaryTest < Test::Unit::TestCase
     FileUtils.rm_rf(@fake_dir)
     FileUtils.rm_rf(@real_dir)
   end
-  
+
   def test_find_pdflatex
     assert_equal(@real_binary,
                  ErbTeX.find_binary(@fake_binary))

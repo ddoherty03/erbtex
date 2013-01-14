@@ -15,17 +15,20 @@ ARGV.each do |a|
   commandline += " #{a}"
 end
 
-# puts "Program name: #{progname}"
-# puts "Command line: #{commandline}"
-# puts 'ARGV:'
-# ARGV.each do |a|
-#   puts "Argument: #{a}"
-# end
-# puts 'PATH:'
-# ENV['PATH'].split(':').each do |p|
-#   puts p
-# end
-# puts "Executable: "
-# puts ErbTeX.find_binary($0)
+verbose = false
+if verbose
+  puts "Program name: #{progname}"
+  puts "Command line: #{commandline}"
+  puts 'ARGV:'
+  ARGV.each do |a|
+    puts "Argument: #{a}"
+  end
+  puts 'PATH:'
+  ENV['PATH'].split(':').each do |p|
+    puts p
+  end
+  puts "Executable: "
+  puts ErbTeX.find_executable($0)
+end
 
 puts ErbTeX.run(commandline)

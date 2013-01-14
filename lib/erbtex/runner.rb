@@ -18,7 +18,7 @@ module ErbTeX
   # Erubis by default (<%= %>).  Erubis -p commandline would use the
   # switch -p '\.{ }\.' But adapt if old pattern style is found in the
   # input.
-  # 
+  #
   # If there are no Erubis patterns in the file, skip the Erubis phase
   # and just pass the original command on to the system.
   #
@@ -31,16 +31,16 @@ module ErbTeX
   # If there is an error in the Erubis phase, we want the error message
   # to make it clear what happened and exit without invoking the tex
   # processor.
-  # 
-  # We want to find the real tex processor with find_binary and run it
+  #
+  # We want to find the real tex processor with find_executable and run it
   # on our processed .etx file and otherwise leave the commandline
   # intact.
-  # 
+  #
   def ErbTeX.run(command)
-    begin 
+    begin
       cl = CommandLine.new(command)
       new_infile = process(cl.input_file, cl.input_path)
-      new_progname = ErbTeX.find_binary(command.lstrip.split(' ')[0])
+      new_progname = ErbTeX.find_executable(command.lstrip.split(' ')[0])
       cmd = cl.new_command_line(new_progname, new_infile)
       puts "Executing: #{cmd}"
       system(cmd)
@@ -61,7 +61,7 @@ module ErbTeX
       contents = f.read
     end
     # TODO: recurse through any \input or \include commands
-    
+
     # Detect which pattern is used.
     # Do nothing if the Erubis patterns are not present
     pat = nil
@@ -96,4 +96,4 @@ module ErbTeX
     of.close
     out_file
   end
-end  
+end

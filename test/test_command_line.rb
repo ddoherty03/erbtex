@@ -2,12 +2,12 @@ require 'test_helper'
 
 class CommandLineTest < Test::Unit::TestCase
   include ErbTeX
-  
+
   def setup
     @test_dir = File.dirname(File.absolute_path(__FILE__))
     @junk_tex = @test_dir + '/junk.tex'
     FileUtils.touch(@junk_tex)
-    
+
     @tex_dir = @test_dir + '/tex_dir'
     FileUtils.mkdir(@tex_dir) unless File.exists?(@tex_dir)
     @junk2_tex = @tex_dir + '/junk2.tex'
@@ -18,15 +18,19 @@ class CommandLineTest < Test::Unit::TestCase
     @junk3_tex = @tex_dir_nw + '/junk3.tex'
     FileUtils.touch(@junk3_tex)
     FileUtils.chmod(0500, @tex_dir_nw)
+
+    @junk4_tex = File.expand_path('~/junk.tex')
+    FileUtils.touch(@junk4_tex)
   end
 
   def teardown
     FileUtils.rm(@junk_tex)
+    FileUtils.rm(@junk4_tex)
     FileUtils.rm_rf(@tex_dir)
     FileUtils.chmod(0700, @tex_dir_nw)
     FileUtils.rm_rf(@tex_dir_nw)
   end
-  
+
   def test_find_ordinary_input_file
     cl = 'pdflatex -ini --halt-on-error junk'
     assert_equal("junk.tex",
@@ -73,41 +77,41 @@ class CommandLineTest < Test::Unit::TestCase
       CommandLine.new(cl).input_file
     end
   end
-  
+
   def test_find_progname
     cl = 'pdflatex -ini --halt-on-error junk.tex'
     assert_equal("pdflatex",
            CommandLine.new(cl).progname)
   end
-  
+
   def test_mark_command_line
     cl = 'pdflatex -ini --halt-on-error junk'
     clm = '^p^ -ini --halt-on-error ^f^'
     assert_equal(clm,
            CommandLine.new(cl).marked_command_line)
   end
-  
+
   def test_mark_command_line_with_ext
     cl = 'pdflatex -ini --halt-on-error junk.tex'
     clm = '^p^ -ini --halt-on-error ^f^'
     assert_equal(clm,
            CommandLine.new(cl).marked_command_line)
   end
-  
+
   def test_mark_command_line_with_dir
     cl = 'pdflatex -ini --halt-on-error ~/junk.tex'
     clm = '^p^ -ini --halt-on-error ^f^'
     assert_equal(clm,
            CommandLine.new(cl).marked_command_line)
   end
-  
+
   def test_mark_command_line_with_spaces
     cl = 'pdflatex -ini --halt-on-error \'/home/ded/A junk.tex\''
     clm = '^p^ -ini --halt-on-error ^f^'
     assert_equal(clm,
            CommandLine.new(cl).marked_command_line)
   end
-  
+
   def test_find_embedded_input_file
     cl = 'pdflatex -ini --halt-on-error \input junk'
     assert_equal("junk.tex",

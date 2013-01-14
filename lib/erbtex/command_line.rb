@@ -2,11 +2,11 @@
 
 module ErbTeX
   class NoInputFile < StandardError; end
-  
+
   class CommandLine
     attr_reader :command_line, :marked_command_line, :input_file
     attr_reader :progname, :input_path, :output_dir
-    
+
     def initialize(command_line)
       @command_line = command_line
       @input_file = @marked_command_line = nil
@@ -16,7 +16,7 @@ module ErbTeX
       find_input_path
       mark_command_line
     end
-    
+
     def find_progname
       @progname = @command_line.split(' ')[0]
       # if @progname =~ /erbtex$/
@@ -24,7 +24,7 @@ module ErbTeX
       #   @command_line = @command_line.sub('erbtex', 'pdflatex')
       # end
     end
-    
+
     def find_output_dir
       args = @command_line.split(' ')
       # There is an -output-comment option, so -output-d is the shortest
@@ -65,14 +65,14 @@ module ErbTeX
         @input_file = "#{$2}"
         if @input_file !~ /\.tex$/
           @input_file += ".tex"
-        end          
+        end
       elsif cmd =~ %r{(\\input\s+)?(["'])((?:\\?.)*?)\2} #"
         # The re above captures single- or double-quoted strings with
         # the insides in $3
         @input_file = "#{$3}"
         if @input_file !~ /\.tex$/
           @input_file += ".tex#{$1}"
-        end          
+        end
       else
         raise NoInputFile, "Can't find input file name in command:\n'#{@command_line}'"
       end
@@ -98,7 +98,7 @@ module ErbTeX
         end
       end
     end
-    
+
     def new_command_line(new_progname, new_infile)
       ncl = @marked_command_line.sub('^p^', new_progname)
       # unless new_infile =~ /^\//
@@ -107,12 +107,11 @@ module ErbTeX
       # Quote the new_infile in case it has spaces
       ncl.sub('^f^', "'#{new_infile}'")
     end
-    
+
     def mark_command_line
       # Replace input file with '^f^'
       infile_re = %r{(\\input\s+)?(([-.~_/A-Za-z0-9]+)(\.[a-z]+)?)\s*$}
       quoted_infile_re = %r{(\\input\s+)?(["'])((?:\\?.)*?)\2} #"
-      #debugger
       if @command_line =~ infile_re
         @marked_command_line = @command_line.sub(infile_re, "#{$1}^f^")
       elsif @command_line =~ quoted_infile_re
@@ -131,9 +130,9 @@ end
 
 # The following text is from the Web2C documentation at
 # http://tug.org/texinfohtml/web2c.html#Output-file-location
-# 
+#
 # 3.4 Output file location
-# 
+#
 # All the programs generally follow the usual convention for output
 # files. Namely, they are placed in the directory current when the
 # program is run, regardless of any input file location; or, in a few

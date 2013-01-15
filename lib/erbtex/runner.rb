@@ -53,7 +53,7 @@ module ErbTeX
   # Run erbtex on the content of file_name, a String, and return the
   # name of the file where the processed content can be found.  This
   # could be the orignal file name if no processing was needed, or a
-  # temporary file if the pattern is found anywhere in the file.
+  # temporary file if the erubis pattern is found anywhere in the file.
   def ErbTeX.process(file_name, dir)
     puts "Input path: #{dir}"
     contents = nil
@@ -62,15 +62,13 @@ module ErbTeX
     end
     # TODO: recurse through any \input or \include commands
 
-    # Detect which pattern is used.
-    # Do nothing if the Erubis patterns are not present
-    pat = nil
-    if contents =~ Regexp.new('\.{.*?}\.')
-      pat = '\.{ }\.'
-    elsif contents =~ Regexp.new('<%.*?%>')
-      pat = '<% %>'
+    # Add current directory to LOAD_PATH
+    $: << '.' unless $:.include?('.')
+
+    if ENV['ERBTEX_PATTERN']
+      pat = ENV['ERBTEX_PATTERN']
     else
-      return file_name
+      pat = '\.{ }\.'
     end
 
     # Otherwise process the contents

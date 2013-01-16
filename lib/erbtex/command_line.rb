@@ -5,11 +5,12 @@ module ErbTeX
 
   class CommandLine
     attr_reader :command_line, :marked_command_line, :input_file
-    attr_reader :progname, :input_path, :output_dir
+    attr_reader :progname, :input_path, :output_dir, :run_dir
 
     def initialize(command_line)
       @command_line = command_line
       @input_file = @marked_command_line = nil
+      @run_dir = Dir.pwd
       find_output_dir
       find_progname
       find_input_file
@@ -19,10 +20,6 @@ module ErbTeX
 
     def find_progname
       @progname = @command_line.split(' ')[0]
-      # if @progname =~ /erbtex$/
-      #   @progname = @progname.sub('erbtex', 'pdflatex')
-      #   @command_line = @command_line.sub('erbtex', 'pdflatex')
-      # end
     end
 
     def find_output_dir
@@ -58,7 +55,7 @@ module ErbTeX
 
     def find_input_file
       # Remove the initial command from the command line
-      cmd = @command_line[@command_line.index(/\s/)..-1]
+      cmd = @command_line.split(/\s+/)[1..-1].join(' ')
       cmd = cmd.gsub(/\s+--?[-a-zA-Z]+(=\S+)?/, ' ')
       infile_re = %r{(\\input\s+)?(([-.~_/A-Za-z0-9]+)(\.[a-z]+)?)\s*$}
       if cmd =~ infile_re
@@ -74,7 +71,7 @@ module ErbTeX
           @input_file += ".tex#{$1}"
         end
       else
-        raise NoInputFile, "Can't find input file name in command:\n'#{@command_line}'"
+        @input_file = nil
       end
     end
 
@@ -82,6 +79,8 @@ module ErbTeX
       # If input_file is absolute, don't look further
       if @input_file =~ /^\//
         @input_path = @input_file
+      elsif @input_file.nil?
+        @input_path = nil
       else
         # The following cribbed from kpathsea.rb
         @progname.untaint
@@ -101,18 +100,20 @@ module ErbTeX
 
     def new_command_line(new_progname, new_infile)
       ncl = @marked_command_line.sub('^p^', new_progname)
-      # unless new_infile =~ /^\//
-      #   new_infile = @input_path + new_infile
-      # end
       # Quote the new_infile in case it has spaces
-      ncl.sub('^f^', "'#{new_infile}'")
+      if new_infile
+        ncl = ncl.sub('^f^', "'#{new_infile}'")
+      end
+      ncl
     end
 
     def mark_command_line
       # Replace input file with '^f^'
       infile_re = %r{(\\input\s+)?(([-.~_/A-Za-z0-9]+)(\.[a-z]+)?)\s*$}
       quoted_infile_re = %r{(\\input\s+)?(["'])((?:\\?.)*?)\2} #"
-      if @command_line =~ infile_re
+      if @input_file.nil?
+        @marked_command_line = @command_line
+      elsif @command_line =~ infile_re
         @marked_command_line = @command_line.sub(infile_re, "#{$1}^f^")
       elsif @command_line =~ quoted_infile_re
         @marked_command_line = @command_line.sub(quoted_infile_re, "#{$1}^f^")

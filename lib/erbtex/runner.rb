@@ -1,4 +1,5 @@
 require 'tempfile'
+require 'pathname'
 
 module ErbTeX
   # When we are handed a command line, it will be one that was
@@ -37,16 +38,20 @@ module ErbTeX
   # intact.
   #
   def ErbTeX.run(command)
-    begin
-      cl = CommandLine.new(command)
-      new_infile = process(cl.input_file, cl.input_path)
+    cl = CommandLine.new(command)
+    Dir.chdir(cl.run_dir) do
+      if cl.input_file
+        new_infile = process(cl.input_file, cl.input_path)
+      else
+        new_infile = nil
+      end
+      new_infile = Pathname.new(new_infile).
+        relative_path_from(Pathname.new(cl.run_dir))
       new_progname = ErbTeX.find_executable(command.lstrip.split(' ')[0])
       cmd = cl.new_command_line(new_progname, new_infile)
+      cmd.sub!('\\', '\\\\\\')
       puts "Executing: #{cmd}"
       system(cmd)
-    rescue ErbTeX::NoInputFile
-      $stderr.puts "ErbTeX Error: " + $!.message
-      exit 1
     end
   end
 

@@ -10,13 +10,12 @@ TeX program.
 Install it with:
     gem install erbtex
 
-
 # Usage
 After the gem is installed, erbtex is placed in your PATH in front of
 the real TeX and LaTeX programs.  It is linked to the names pdflatex,
 tex, pdftex, and so forth, so that it can be invoked with those names
 on the input file.  It will read the source and execute any ruby code
-between the markers `{.` and `.}`.  It will then find the real program
+between the markers `.{` and `}.`.  It will then find the real program
 further along your path and run it on the pre-processed output.
 
 # Example

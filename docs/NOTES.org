@@ -1,0 +1,34 @@
+During an installation of texlive from ubuntu package, the following
+error was triggered which appears to be the fault of erbtex.
+Investigate.
+
+#+begin_quote
+fmtutil: running `mf-nowin -ini   -jobname=mf -progname=mf -translate-file=cp227.tcx mf.ini' ...
+This is METAFONT, Version 2.718281 (TeX Live 2012/Debian) (INIMF)
+(/usr/share/texlive/texmf/web2c/cp227.tcx)
+(/usr/share/texlive/texmf-dist/metafont/config/mf.ini
+(/usr/share/texlive/texmf-dist/metafont/base/plain.mf
+Preloading the plain base, version 2.71: preliminaries,
+ basic constants and mathematical macros,
+ macros for converting from device-independent units to pixels,
+ macros and tables for various modes of operation,
+ macros for drawing and filling,
+ macros for proof labels and rules,
+ macros for character and font administration,
+and a few last-minute items.)
+(/usr/share/texlive/texmf-dist/metafont/misc/modes.mf) )
+Beginning to dump on file mf.base
+ (base=mf 2013.1.17)
+2226 strings of total length 30005
+11864 memory locations dumped; current usage is 3658&7844
+1004 symbolic tokens
+Transcript written on mf.log.
+fmtutil: /var/lib/texmf/web2c/metafont/mf.base installed.
+fmtutil: running `pdftex -ini   -jobname=pdfetex -progname=pdfetex -translate-file=cp227.tcx *pdfetex.ini' ...
+/home/ded/.rvm/rubies/ruby-1.9.3-p194/lib/ruby/site_ruby/1.9.1/rubygems/dependency.rb:247:in `to_specs': Could not find erbtex (>= 0) amongst [bigdecimal-1.1.0, io-console-0.3, json-1.5.4, minitest-2.5.1, rake-0.9.2.2, rdoc-3.9.4] (Gem::LoadError)
+  from /home/ded/.rvm/rubies/ruby-1.9.3-p194/lib/ruby/site_ruby/1.9.1/rubygems/dependency.rb:256:in `to_spec'
+  from /home/ded/.rvm/rubies/ruby-1.9.3-p194/lib/ruby/site_ruby/1.9.1/rubygems.rb:1231:in `gem'
+  from /home/ded/.rvm/gems/ruby-1.9.3-p194/bin/pdftex:18:in `<main>'
+  from /home/ded/.rvm/gems/ruby-1.9.3-p194/bin/ruby_noexec_wrapper:14:in `eval'
+  from /home/ded/.rvm/gems/ruby-1.9.3-p194/bin/ruby_noexec_wrapper:14:in `<main>'
+#+end_quote

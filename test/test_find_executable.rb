@@ -20,14 +20,9 @@ class FindBinaryTest < Test::Unit::TestCase
     FileUtils.rm_rf(@fake_binary) if File.exists?(@fake_binary)
     FileUtils.ln_s(@erbtex, @fake_binary)
 
-    # Create a "real" pdflatex to find
-    @real_binary = 'bin/pdflatex'
-    FileUtils.rm_rf('bin') if File.exists?('bin')
-    FileUtils.mkdir('bin')
-    FileUtils.touch(@real_binary)
-    FileUtils.chmod(0700, @real_binary)
-    @real_binary = File.absolute_path(@real_binary)
-    @real_dir = File.dirname(@real_binary)
+    # Point to "real" pdflatex to find
+    @real_binary = '/usr/bin/pdflatex'
+    @real_dir = '/usr/bin'
 
     # Put the fake dir on the PATH before the real dir
     ENV['PATH'] = @fake_dir + ':' + @real_dir + ':' + ENV['PATH']
@@ -35,16 +30,15 @@ class FindBinaryTest < Test::Unit::TestCase
 
   def teardown
     FileUtils.rm_rf(@fake_dir)
-    FileUtils.rm_rf(@real_dir)
   end
 
   def test_find_pdflatex
     assert_equal(@real_binary,
-                 ErbTeX.find_binary(@fake_binary))
+                 ErbTeX.find_executable(@fake_binary))
   end
 
   def test_find_pdflatex_with_erbtex
     assert_equal(@real_binary,
-                 ErbTeX.find_binary(@erbtex))
+                 ErbTeX.find_executable(@erbtex))
   end
 end

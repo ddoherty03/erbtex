@@ -1,7 +1,20 @@
 #! /usr/bin/env ruby
 
+verbose = true
+
 # This adds our lib subdirectory to the ruby load path
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
+
+# This adds our RUBYLIB env to ruby load path
+if ENV['RUBYLIB']
+  STDERR.puts "ENV['RUBYLIB']:" if verbose
+  ENV['RUBYLIB'].split(':').each do |p|
+    $LOAD_PATH.unshift p
+    STDERR.puts "\t#{p}" if verbose
+  end
+else
+  STDERR.puts "ENV['RUBYLIB'] is EMPTY" if verbose
+end
 
 require 'erbtex'
 require 'ruby-debug'
@@ -15,20 +28,23 @@ ARGV.each do |a|
   commandline += " #{a}"
 end
 
-verbose = false
 if verbose
-  puts "Program name: #{progname}"
-  puts "Command line: #{commandline}"
-  puts 'ARGV:'
+  STDERR.puts "Program name: #{progname}"
+  STDERR.puts "Command line: #{commandline}"
+  STDERR.puts "Ruby Load path:"
+  $:.each do |p|
+    STDERR.puts "\t#{p}"
+  end
+  STDERR.puts 'ARGV:'
   ARGV.each do |a|
-    puts "Argument: #{a}"
+    STDERR.puts "\t#{a}"
   end
-  puts 'PATH:'
+  STDERR.puts 'PATH:'
   ENV['PATH'].split(':').each do |p|
-    puts p
+    STDERR.puts "\t#{p}"
   end
-  puts "Executable: "
-  puts ErbTeX.find_executable($0)
+  STDERR.puts "Executable: "
+  STDERR.puts ErbTeX.find_executable($0)
 end
 
-puts ErbTeX.run(commandline)
+ErbTeX.run(commandline)

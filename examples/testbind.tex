@@ -2,33 +2,30 @@
 
 \begin{document}
 
-% Will this be treated as a comment or ruby code?  This
-% demonstrates that a local variable defined in one chunk of
-% Ruby code can be picked up and used in a later chunk.
+% This demonstrates that a local variable defined in one chunk of Ruby code
+% can be picked up and used in a later chunk.
 
-.{ x = 99999 }.
+{: x = 99999 :}
 
 \section{Some Pointed Questions}
 
-.{ 25.times do }.
+{: 25.times do :}
+  \noindent Did you know that
+  {: new_x = Math.sqrt(x) :}
+  $\sqrt{{:= "%0.10f" % x :}} \approx {:= "%0.10f" % new_x :}$?\par
+  {: x = new_x :}
+{: end :}
 
-\noindent Did you know that
-.{ new_x = Math.sqrt(x) }.
-$\sqrt{.{= "%0.10f" % x }.} \approx .{= "%0.10f" % new_x }.$?\par
-.{ x = new_x }.
-.{ end }.
+Maybe if you're Rain Man.
 
-Only if you're Rain Man.
+% The following shows that local variables don't persist across a 'require'
+% statement.  Local variables defined in required file disappear on return.
+% Use a global variable $var to communicate between files.
 
-% The following shows that local variables don't persist
-% across a 'require' statement.  Local variables defined in
-% required file disappear on return.  Use a global variable
-% $var to communicate between files.
+{: require './testbind' :}
 
-.{ require './testbind' }.
-
-The `required' file set x to 1957, but it still reads .{= x }.
-in the \LaTeX\ doc.  However, the global variable \$x set to
-1957 in the required file is .{= $x }. %$
+The `required' file set x to 1957, but it still reads {:= x :} in the \LaTeX\
+doc.  However, the global variable \$x set to 1957 in the required file is {:=
+  $x :} %$
 in the \LaTeX\ file.
 \end{document}

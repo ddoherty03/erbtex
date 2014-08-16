@@ -8,7 +8,8 @@ pre-processes TeX and LaTeX source files with ruby's erubis and then
 passes the resulting file along to a real TeX program.
 
 # Installation
-Install it with:
+
+  Install it with:
     gem install erbtex
 
 # Usage
@@ -19,26 +20,23 @@ names pdftex, pdflatex, luatex, and several other TeX processing
 programs.  Thus, invoking, for example, `pdflatex` runs `erbtex`
 instead of the real `pdflatex` program.
 
-It will then read the input file and execute any ruby code between the
-special markers markers `.{` and `}.`.  It will then find the real
-program further along your path and run it on the pre-processed
-output.  The result is that you can use the ruby programming language
-to greatly increase the computational capabilities of a normal TeX or
-LaTeX file.
+It will then read the input file and execute any ruby code between the special
+markers markers `{:` and `:}` and then find the real program further along
+your path and run it on the pre-processed output.  The result is that you can
+use the ruby programming language to greatly increase the computational
+capabilities of a normal TeX or LaTeX file.
 
-erbtex simply uses the `erubis` program to pre-process the input,
-except that it uses the `.{ }.` delimiters instead of the erubis
-  default of `<% %>`.  The dot-brace form of delimiters is less
-  disruptive of syntax highlighting than the default delimiters, which
-  get confused with TeX and LaTeX comments.
+erbtex simply uses the `erubis` program to pre-process the input, except that
+it uses the `{: :}` delimiters instead of the erubis default of `<% %>`.  The
+brace-colon form of delimiters is less disruptive of syntax highlighting than
+the default delimiters, which get confused with TeX and LaTeX comments.
 
-  If the opening delimiter has an `=` appended to it, the contained
-  expression is converted into a string and inserted in-place into the
-  TeX manuscript at that point.  Without the `=` the code is simply
-  executed.  Loops started in one ruby fragment can be continued or
-  terminated in a later fragment, and variables defined in one
-  fragment in one fragment are visible in later fragments according
-  to Ruby's usual scoping rules.
+If the opening delimiter has an `=` appended to it, the contained expression
+is converted into a string and inserted in-place into the TeX manuscript at
+that point.  Without the `=` the code is simply executed.  Loops started in
+one ruby fragment can be continued or terminated in a later fragment, and
+variables defined in one fragment in one fragment are visible in later
+fragments according to Ruby's usual scoping rules.
 
 # Example
 
@@ -60,10 +58,16 @@ LaTeX.
     \endhead
     \hline\hline
     \endfoot
-    .{0.upto(100).each do |x| }.
-      .{= "\\mathversion{bold}$%0.4f$" % x }.&
-      .{= "$%0.8f$" % Math.sqrt(x) }.\\
-    .{end}.
+    % The following line starts a ruby enumerator loop but does not
+    % produce any output, since the delimiters are {: :}.
+    {: 0.upto(100).each do |x| :}
+      % But the following two lines produce out put since the opening
+      % delimiter is '{:='.  Both call the sprintf method in ruby via the
+      % percent operator, and the second line calls ruby's Math module to
+      % compute the square root.
+      {:= "\\mathversion{bold}$%0.4f$" % x :}&
+      {:= "$%0.8f$" % Math.sqrt(x) :}\\
+    {: end :}
     \end{longtable}
     \end{document}
 

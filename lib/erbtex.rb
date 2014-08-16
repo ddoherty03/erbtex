@@ -7,4 +7,4 @@ require 'erbtex/command_line'
 require 'erbtex/find_binary'
 require 'erbtex/runner'
 
-require 'debugger'
+require 'byebug'

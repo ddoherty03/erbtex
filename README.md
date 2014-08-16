@@ -9,7 +9,8 @@ passes the resulting file along to a real TeX program.
 
 # Installation
 
-  Install it with:
+Install it with:
+
     gem install erbtex
 
 # Usage
@@ -61,7 +62,7 @@ LaTeX.
     % The following line starts a ruby enumerator loop but does not
     % produce any output, since the delimiters are {: :}.
     {: 0.upto(100).each do |x| :}
-      % But the following two lines produce out put since the opening
+      % But the following two lines produce output since the opening
       % delimiter is '{:='.  Both call the sprintf method in ruby via the
       % percent operator, and the second line calls ruby's Math module to
       % compute the square root.

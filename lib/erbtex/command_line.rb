@@ -60,7 +60,9 @@ module ErbTeX
       infile_re = %r{(\\input\s+)?(([-.~_/A-Za-z0-9]+)(\.[a-z]+)?)\s*$}
       if cmd =~ infile_re
         @input_file = "#{$2}"
-        if @input_file !~ /\.tex$/
+        if @input_file =~ /\.tex(\.erb)?$/
+          @input_file = @input_file
+        else
           @input_file += ".tex"
         end
       elsif cmd =~ %r{(\\input\s+)?(["'])((?:\\?.)*?)\2} #"

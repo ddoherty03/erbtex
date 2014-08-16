@@ -83,7 +83,11 @@ module ErbTeX
     # from, or the current directory, and a temp file as a last resort.
     file_absolute = File.absolute_path(File.expand_path(file_name))
     file_dir = File.dirname(file_absolute)
-    file_base = File.basename(file_absolute, '.tex')
+    if file_absolute =~ /\.tex\.erb$/
+      file_base = File.basename(file_absolute, '.tex.erb')
+    else
+      file_base = File.basename(file_absolute, '.tex')
+    end
     of = nil
     if File.writable?(file_dir)
       out_file = file_dir + '/' + file_base + '.etx'

@@ -14,12 +14,10 @@ module ErbTeX
   # Write the .etx file to the current directory unless it is not
   # writable, in which case write it to /tmp.
   #
-  # Perhaps change the Erubis pattern to something like .{ }. so that
-  # AucTeX does not get confused with the comment character used in
-  # Erubis by default (<%= %>).  Erubis -p commandline would use the
-  # switch -p '\.{ }\.' But adapt if old pattern style is found in the
-  # input.
-  #
+  # Perhaps change the Erubis pattern to something other than the erbtex
+  # default '{: :}'.  Erubis normally by uses '<%= %>' by default.  Erubis -p
+  # commandline -p '\.{ }\.'
+
   # If there are no Erubis patterns in the file, skip the Erubis phase
   # and just pass the original command on to the system.
   #
@@ -51,6 +49,7 @@ module ErbTeX
         new_progname = ErbTeX.find_executable(command.lstrip.split(' ')[0])
         cmd = cl.new_command_line(new_progname, new_infile)
         cmd.sub!('\\', '\\\\\\')
+        cmd.sub!('&', '\\\\&')
         puts "Executing: #{cmd}"
         system(cmd)
       end

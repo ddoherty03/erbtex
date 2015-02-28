@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CommandLineTest < Test::Unit::TestCase
+class CommandLineTest < Minitest::Test
   include ErbTeX
 
   def setup
@@ -9,12 +9,12 @@ class CommandLineTest < Test::Unit::TestCase
     FileUtils.touch(@junk_tex)
 
     @tex_dir = @test_dir + '/tex_dir'
-    FileUtils.mkdir(@tex_dir) unless File.exists?(@tex_dir)
+    FileUtils.mkdir(@tex_dir) unless File.exist?(@tex_dir)
     @junk2_tex = @tex_dir + '/junk2.tex'
     FileUtils.touch(@junk2_tex)
 
     @tex_dir_nw = @test_dir + '/tex_dir_nw'
-    FileUtils.mkdir(@tex_dir_nw) unless File.exists?(@tex_dir_nw)
+    FileUtils.mkdir(@tex_dir_nw) unless File.exist?(@tex_dir_nw)
     @junk3_tex = @tex_dir_nw + '/junk3.tex'
     FileUtils.touch(@junk3_tex)
     FileUtils.chmod(0500, @tex_dir_nw)
@@ -177,5 +177,10 @@ class CommandLineTest < Test::Unit::TestCase
     Dir.chdir('tex_dir_nw') do
       assert_equal(File.expand_path('../tex_dir'), CommandLine.new(cl).output_dir)
     end
+  end
+
+  def test_command_escape_ampersand
+    cl =
+      '/usr/bin/pdflatex -interaction=nonstopmode &prv_geometric geometric.etx'
   end
 end

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class FindBinaryTest < Test::Unit::TestCase
+class FindBinaryTest < Minitest::Test
   include ErbTeX
 
   # Here we set up the situation as we expect it to be after
@@ -17,7 +17,7 @@ class FindBinaryTest < Test::Unit::TestCase
     @erbtex = @fake_dir + '/erbtex'
     FileUtils.touch(@erbtex)
     FileUtils.chmod(0700, @erbtex)
-    FileUtils.rm_rf(@fake_binary) if File.exists?(@fake_binary)
+    FileUtils.rm_rf(@fake_binary) if File.exist?(@fake_binary)
     FileUtils.ln_s(@erbtex, @fake_binary)
 
     # Point to "real" pdflatex to find

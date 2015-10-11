@@ -45,14 +45,14 @@ module ErbTeX
       end
       if new_infile
         new_infile = Pathname.new(new_infile).
-          relative_path_from(Pathname.new(cl.run_dir))
-        new_progname = ErbTeX.find_executable(command.lstrip.split(' ')[0])
-        cmd = cl.new_command_line(new_progname, new_infile)
-        cmd.sub!('\\', '\\\\\\')
-        cmd.sub!('&', '\\\\&')
-        puts "Executing: #{cmd}"
-        system(cmd)
+                     relative_path_from(Pathname.new(cl.run_dir))
       end
+      new_progname = ErbTeX.find_executable(command.lstrip.split(' ')[0])
+      cmd = cl.new_command_line(new_progname, new_infile)
+      cmd.sub!('\\', '\\\\\\')
+      cmd.sub!('&', '\\\\&')
+      puts "Executing: #{cmd}"
+      system(cmd)
     end
   end
 

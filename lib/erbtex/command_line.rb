@@ -56,7 +56,8 @@ module ErbTeX
     def find_input_file
       # Remove the initial command from the command line
       cmd = @command_line.split(/\s+/)[1..-1].join(' ')
-      cmd = cmd.gsub(/\s+--?[-a-zA-Z]+(=\S+)?/, ' ')
+      # Strip out options
+      cmd = cmd.gsub(/--?[-\w]+(=[-\w]+)?/, ' ')
       infile_re = %r{(\\input\s+)?(([-.~_/A-Za-z0-9]+)(\.[a-z]+)?)\s*$}
       if cmd =~ infile_re
         @input_file = "#{$2}"
@@ -88,12 +89,16 @@ module ErbTeX
         @progname.untaint
         @input_file.untaint
         kpsewhich = "kpsewhich -progname=\"#{@progname}\" -format=\"tex\" \"#{@input_file}\""
-        lines = ""
+        lines = []
         IO.popen(kpsewhich) do |io|
           lines = io.readlines
         end
         if $? == 0
-          @input_path = lines[0].chomp.untaint
+          if lines.empty?
+            @input_path = nil
+          else
+            @input_path = lines[0].chomp.untaint
+          end
         else
           raise NoInputFile, "Can't find #{@input_file} in TeX search path; try kpsewhich -format=tex #{@input_file}."
         end

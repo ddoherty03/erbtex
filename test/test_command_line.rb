@@ -65,14 +65,14 @@ class CommandLineTest < Minitest::Test
   end
 
   def test_no_input_file
-    assert_raise ErbTeX::NoInputFile do
+    assert_raises ErbTeX::NoInputFile do
       cl = 'pdflatex -ini'
       CommandLine.new(cl)
     end
   end
 
   def test_no_input_file_with_eq
-    assert_raise ErbTeX::NoInputFile do
+    assert_raises ErbTeX::NoInputFile do
       cl = 'pdflatex -ini -output-directory=/tmp'
       CommandLine.new(cl).input_file
     end
@@ -147,7 +147,7 @@ class CommandLineTest < Minitest::Test
 
   def test_dont_find_input_path_non_existing
     cl = 'pdflatex -ini --halt-on-error \input junk3.tex'
-    assert_raise NoInputFile do
+    assert_raises NoInputFile do
       CommandLine.new(cl).input_path
     end
   end

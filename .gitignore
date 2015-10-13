@@ -7,4 +7,4 @@
 *.synctex.gz
 etc
 auto
-/.bundle/config
+/.bundle/bin

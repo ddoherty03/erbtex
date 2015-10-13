@@ -4,6 +4,7 @@
 *.out
 *.pdf
 *.gem
+*.synctex.gz
 etc
 auto
 /.bundle/config

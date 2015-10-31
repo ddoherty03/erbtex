@@ -21,7 +21,7 @@ class FindBinaryTest < Minitest::Test
     FileUtils.ln_s(@erbtex, @fake_binary)
 
     # Point to "real" pdflatex to find
-    @real_binary = '/usr/bin/pdflatex'
+    @real_binary = '/usr/local/bin/pdflatex'
     @real_dir = '/usr/bin'
 
     # Put the fake dir on the PATH before the real dir

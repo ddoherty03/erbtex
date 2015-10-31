@@ -25,6 +25,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "erubis"
   gem.add_development_dependency 'rake'
   gem.add_development_dependency "bundler"
+  gem.add_development_dependency "rspec"
   gem.add_development_dependency "minitest"
   gem.add_development_dependency "pry"
   gem.add_development_dependency "pry-doc"

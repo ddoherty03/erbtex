@@ -57,7 +57,7 @@ module ErbTeX
       # Remove the initial command from the command line
       cmd = @command_line.split(/\s+/)[1..-1].join(' ')
       # Strip out options
-      cmd = cmd.gsub(/--?[-\w]+(=[-\w]+)?/, ' ')
+      cmd = cmd.gsub(/\s+--?[-\w]+(=[-\w]+)?/, ' ')
       infile_re = %r{(\\input\s+)?(([-.~_/A-Za-z0-9]+)(\.[a-z]+)?)\s*$}
       if cmd =~ infile_re
         @input_file = "#{$2}"

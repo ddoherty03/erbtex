@@ -30,6 +30,8 @@
     end
 :}
 
+\def\tstrut{\rule[-1pt]{0pt}{11pt}}
+
 %% Set up the longtable environment by specifying the header for
 %% each page and the footer.
 \begin{longtable}[c]{c|llllll}
@@ -63,7 +65,7 @@
 
 %% Treat the first line of the table, for an x value of 0 specially
 %% by giving exact answers in symbolic form.
-{:= "\\multicolumn{1}{c|}{{\\mathversion{bold}\\mark{%s}$0$}}" % d0.to_tex :}&
+{:= "\\multicolumn{1}{c|}{\\tstrut{\\mathversion{bold}\\mark{%s}$0$}}" % d0.to_tex :}&
 {:= "\\multicolumn{1}{c}{{$0$}}" :}&
 {:= "\\multicolumn{1}{c}{{$1$}}" :}&
 {:= "\\multicolumn{1}{c}{{$0$}}" :}&
@@ -94,7 +96,7 @@
 ## around 2MB.
 -:}
 \mark{{:= x.to_tex :}}
-{:= "\\mathversion{bold}#{x.to_tex}" :}&
+\tstrut{:= "\\mathversion{bold}#{x.to_tex}" :}&
 {:= "$%0.8f$" % x.sin :}&
 {:= "$%0.8f$" % x.cos :}&
 {:= "$%0.*f$" % [ digs(tanx), tanx ] :}&

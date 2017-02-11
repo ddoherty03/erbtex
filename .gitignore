@@ -8,3 +8,5 @@
 etc
 auto
 /.bundle/bin
+*.fdb_latexmk
+*.fls

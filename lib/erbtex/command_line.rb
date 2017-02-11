@@ -4,10 +4,22 @@ module ErbTeX
   class NoInputFile < StandardError; end
 
   class CommandLine
-    attr_reader :erbtex_name, :tex_program, :tex_options, :tex_commands, :input_file
+    attr_reader :erbtex_name, :tex_program, :tex_options
+    attr_reader :tex_commands, :input_file
 
     def initialize(argv)
-      binding.pry
+      # Note: argv will be the command line arguments after processing by the
+      # shell, so if we see things such as '&', '~', '\' in the args, these were
+      # quoted by the user on the command-line and need no special treatment
+      # here. For example, '~/junk' on the commandline will show up here as
+      # '/home/ded/junk'. If we see '~/junk', that means the user has quoted the
+      # ~ on the command line with something like '\~junk', so we should assume
+      # that the user wants to keep in that way. Likewise, an arg with spaces in
+      # it will have been quoted by the user to be seen as a single argument.
+      # When we output these for use by the shell in the system command, we
+      # should apply shellquote to everything so that the receiving shell sees
+      # the args in the same way.
+
       # Remove 'erbtex' from the front
       @erbtex_name = argv.shift
 
@@ -39,13 +51,17 @@ module ErbTeX
       @tex_options = argv.dup
     end
 
-    def tex_command(tex_file=input_file)
-      "#{tex_program} #{tex_options.join(' ')} #{tex_commands.join(' ')} #{tex_file}"
+    def tex_command(tex_file = input_file)
+      "#{tex_program} " \
+      "#{tex_options.shelljoin} " \
+      "#{tex_commands.shelljoin} " \
+      "#{tex_file}"
+        .strip.squeeze(' ')
     end
 
     # Return the name of the input file based on the name given in the command
     # line. Try to find the right extension for the input file if none is given.
-    def expand_input_file(input_file)
+    def self.expand_input_file(input_file)
       full_ext = input_file[/\A(.*)(\.[\w.]+)\z/, 2]
       if full_ext.nil? || full_ext.empty?
         if File.exist?("#{input_file}.tex.erb")

@@ -7,8 +7,8 @@ Gem::Specification.new do |gem|
   gem.version = ErbTeX::VERSION
   gem.platform = Gem::Platform::RUBY
   gem.date = %q{2012-05-13}
-  gem.homepage = ""
-  gem.authors = ["Daniel E. Doherty"]
+  gem.homepage = ''
+  gem.authors = ['Daniel E. Doherty']
   gem.email = %q{ded-erbtex@ddoherty.net}
   gem.summary = %q{Preprocesses TeX and LaTeX files with erubis for ruby.}
   gem.description = %q{Create a local link called pdflatex to erbtex and it will
@@ -17,17 +17,17 @@ Gem::Specification.new do |gem|
                      automated TeX and LaTeX documents.}
 
   gem.files         = `git ls-files`.split("\n")
-  gem.files.delete_if {|f| f =~ /(log|etc|aux|etx|pdf|gem)$/}
+  gem.files.delete_if { |f| f =~ /(log|etc|aux|etx|pdf|gem)$/ }
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  gem.require_paths = ["lib"]
+  gem.require_paths = ['lib']
 
-  gem.add_dependency "erubis"
+  gem.add_dependency 'erubis'
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency "bundler"
-  gem.add_development_dependency "rspec"
-  gem.add_development_dependency "minitest"
-  gem.add_development_dependency "pry"
-  gem.add_development_dependency "pry-doc"
-  gem.add_development_dependency "pry-byebug"
+  gem.add_development_dependency 'bundler'
+  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'minitest'
+  gem.add_development_dependency 'pry'
+  gem.add_development_dependency 'pry-doc'
+  gem.add_development_dependency 'pry-byebug'
 end

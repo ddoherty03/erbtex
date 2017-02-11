@@ -4,18 +4,62 @@ module ErbTeX
   class NoInputFile < StandardError; end
 
   class CommandLine
-    attr_reader :command_line, :marked_command_line, :input_file
-    attr_reader :progname, :input_path, :output_dir, :run_dir
+    attr_reader :erbtex_name, :tex_program, :tex_options, :tex_commands, :input_file
 
-    def initialize(command_line)
-      @command_line = command_line
-      @input_file = @marked_command_line = nil
-      @run_dir = Dir.pwd
-      find_output_dir
-      find_progname
-      find_input_file
-      find_input_path
-      mark_command_line
+    def initialize(argv)
+      binding.pry
+      # Remove 'erbtex' from the front
+      @erbtex_name = argv.shift
+
+      # Find the tex_commands
+      @tex_commands = []
+      if argv.any? { |a| a =~ /\A\\/ }
+        # All args after first starting with '\' should be interpreted as TeX
+        # commands, even if they don't start with '\'
+        @tex_commands = argv.drop_while { |a| a !~ /\A\\/ }
+        first_tex_command_k = argv.size - @tex_commands.size
+        argv = argv[0..first_tex_command_k - 1]
+      end
+
+      # Look for our --invoke=tex_command option
+      @tex_program = 'pdflatex'
+      if argv.any? { |a| a =~ /\A--invoke=(\w+)/ }
+        @tex_program = $1
+        argv.reject! { |a| a =~ /\A--invoke=(\w+)/ }
+      end
+
+      # The last argument, assuming it does not start with a '-', is assumed to
+      # be the name of the input_file.
+      @input_file =
+        expand_input_file(argv.pop) if argv[-1] !~ /\A-/ && argv[-1] !~ /\A\&/
+
+      # What remains in argv should be the tex program's '-options', which
+      # should be passed through untouched. So, can form the full command line
+      # for tex_processing
+      @tex_options = argv.dup
+    end
+
+    def tex_command(tex_file=input_file)
+      "#{tex_program} #{tex_options.join(' ')} #{tex_commands.join(' ')} #{tex_file}"
+    end
+
+    # Return the name of the input file based on the name given in the command
+    # line. Try to find the right extension for the input file if none is given.
+    def expand_input_file(input_file)
+      full_ext = input_file[/\A(.*)(\.[\w.]+)\z/, 2]
+      if full_ext.nil? || full_ext.empty?
+        if File.exist?("#{input_file}.tex.erb")
+          "#{input_file}.tex.erb"
+        elsif File.exist?("#{input_file}.tex")
+          "#{input_file}.tex"
+        elsif File.exist?("#{input_file}.erb")
+          "#{input_file}.erb"
+        else
+          input_file
+        end
+      else
+        input_file
+      end
     end
 
     def find_progname

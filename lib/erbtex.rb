@@ -1,6 +1,10 @@
 #! /usr/bin/env ruby
 
+require 'bundler/setup'
+Bundler.require
+
 require 'erubis'
+require 'pry'
 
 require 'erbtex/version'
 require 'erbtex/command_line'

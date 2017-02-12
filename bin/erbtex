@@ -20,7 +20,7 @@ require 'erbtex'
 
 module ErbTeX
   cl = CommandLine.new(ARGV)
-  ErbTeX.run(cl)
+  exit ErbTeX.run(cl).exitstatus
 end
 
 

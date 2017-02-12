@@ -4,9 +4,11 @@ module ErbTeX
   describe CommandLine do
     describe 'parsing' do
       before :all do
+        # Note: ARGV does not include the name of the program as the first
+        # element, as in C.
         @argv_with_file =
           %w(
-            erbtex -draftmode -enc -etex -file-line-error -fmt junk
+            -draftmode -enc -etex -file-line-error -fmt junk
             -halt-on-error -ini -interaction batchmode -ipc -ipc-start
             -jobname junk -kpathsea-debug 8 -mktex tex --invoke=pdflatex
             -mltex -nomktex tfm -ouptput-comment This\ is\ a\ long\ comment
@@ -16,7 +18,7 @@ module ErbTeX
           )
         @argv_with_cmds =
           %w(
-            erbtex -draftmode -enc -etex -file-line-error -fmt junk
+            -draftmode -enc -etex -file-line-error -fmt junk
             -halt-on-error -ini -interaction batchmode -ipc -ipc-start
             -jobname junk -kpathsea-debug 8 -mktex tex --invoke=pdflatex
             -mltex -nomktex tfm -ouptput-comment This\ is\ a\ long\ comment
@@ -27,7 +29,7 @@ module ErbTeX
           )
         @argv_with_file_cmds =
           %w(
-            erbtex -draftmode -enc -etex -file-line-error -fmt junk
+            -draftmode -enc -etex -file-line-error -fmt junk
             -halt-on-error -ini -interaction batchmode -ipc -ipc-start
             -jobname junk -kpathsea-debug 8 -mktex tex --invoke=pdflatex
             -mltex -nomktex tfm -ouptput-comment This\ is\ a\ long\ comment

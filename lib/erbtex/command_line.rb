@@ -14,14 +14,13 @@ module ErbTeX
       # here. For example, '~/junk' on the commandline will show up here as
       # '/home/ded/junk'. If we see '~/junk', that means the user has quoted the
       # ~ on the command line with something like '\~junk', so we should assume
-      # that the user wants to keep in that way. Likewise, an arg with spaces in
+      # that the user wants to keep it that way. Likewise, an arg with spaces in
       # it will have been quoted by the user to be seen as a single argument.
       # When we output these for use by the shell in the system command, we
       # should apply shellquote to everything so that the receiving shell sees
       # the args in the same way.
 
-      # Remove 'erbtex' from the front
-      @erbtex_name = argv.shift
+      @erbtex_name = File.basename($0)
 
       # Find the tex_commands
       @tex_commands = []

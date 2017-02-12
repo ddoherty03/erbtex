@@ -36,10 +36,11 @@ module ErbTeX
   # intact.
   #
   def self.run(cl)
-    if cl.input_file
-      tex_file = erb_to_tex(cl.input_file)
+    tex_file = erb_to_tex(cl.input_file) if cl.input_file
+    unless system(cl.tex_command(tex_file))
+      stderr.puts "Call to #{cl.tex_program} failed."
+      exit $?
     end
-    system(cl.tex_command(tex_file))
   end
 
   def self.erb_to_tex(in_file)
@@ -57,11 +58,17 @@ module ErbTeX
       end
 
     out_file = set_out_file(in_file)
-    File.open(out_file, 'w+') do |f|
+    File.open(out_file, 'w') do |f|
       er = ::Erubis::Eruby.new(in_contents, pattern: pat)
       f.write(er.result)
     end
     out_file
+  rescue SystemCallError => ex
+    $stderr.puts "Error: #{ex}"
+    exit 1
+  rescue ScriptError => ex
+    $stderr.puts "Erubis pre-processing failed: #{ex}"
+    exit 1
   end
 
   def self.set_out_file(in_file)

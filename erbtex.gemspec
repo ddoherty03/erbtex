@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
                      automated TeX and LaTeX documents.}
 
   gem.files         = `git ls-files`.split("\n")
-  gem.files.delete_if { |f| f =~ /(log|etc|aux|etx|pdf|gem)$/ }
+  gem.files.delete_if { |f| f =~ /(log|etc|aux|etx|pdf|gem|tmp)$/ }
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.require_paths = ['lib']

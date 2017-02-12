@@ -1,57 +1,8 @@
 #! /usr/bin/env ruby
 
-verbose = true
-
-# This adds our lib subdirectory to the ruby load path
-# $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
-
-# # This adds our RUBYLIB env to ruby load path
-# if ENV['RUBYLIB']
-#   STDERR.puts "ENV['RUBYLIB']:" if verbose
-#   ENV['RUBYLIB'].split(':').each do |p|
-#     $LOAD_PATH.unshift p
-#     STDERR.puts "\t#{p}" if verbose
-#   end
-# else
-#   STDERR.puts "ENV['RUBYLIB'] is EMPTY" if verbose
-# end
-
 require 'erbtex'
 
 module ErbTeX
   cl = CommandLine.new(ARGV)
   exit ErbTeX.run(cl).exitstatus
 end
-
-
-# __END__
-
-# progname = File.basename($0)
-# commandline = progname
-# ARGV.each do |a|
-#   if a =~ /\s/
-#     a = "'" + a + "'"
-#   end
-#   commandline += " #{a}"
-# end
-
-# if verbose
-#   STDERR.puts "Program name: #{progname}"
-#   STDERR.puts "Command line: #{commandline}"
-#   STDERR.puts "Ruby Load path:"
-#   $:.each do |p|
-#     STDERR.puts "\t#{p}"
-#   end
-#   STDERR.puts 'ARGV:'
-#   ARGV.each do |a|
-#     STDERR.puts "\t#{a}"
-#   end
-#   STDERR.puts 'PATH:'
-#   ENV['PATH'].split(':').each do |p|
-#     STDERR.puts "\t#{p}"
-#   end
-#   STDERR.puts "Executable: "
-#   STDERR.puts ErbTeX.find_executable($0)
-# end
-
-# ErbTeX.run(commandline)

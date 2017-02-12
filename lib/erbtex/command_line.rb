@@ -39,10 +39,11 @@ module ErbTeX
         argv.reject! { |a| a =~ /\A--invoke=(\w+)/ }
       end
 
-      # The last argument, assuming it does not start with a '-', is assumed to
-      # be the name of the input_file.
-      @input_file =
-        CommandLine.expand_input_file(argv.pop) if argv[-1] !~ /\A-/ && argv[-1] !~ /\A\&/
+      # The last argument, assuming it does not start with a '-' or '&', is
+      # assumed to be the name of the input_file.
+      if !argv.empty? && argv[-1] !~ /\A[-&]/
+        @input_file = CommandLine.expand_input_file(argv.pop)
+      end
 
       # What remains in argv should be the tex program's '-options', which
       # should be passed through untouched. So, can form the full command line

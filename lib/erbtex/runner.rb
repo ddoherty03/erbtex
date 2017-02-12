@@ -36,14 +36,44 @@ module ErbTeX
   # intact.
   #
   def self.run(cl)
-    tex_file = erb_to_tex(cl.input_file) if cl.input_file
-    unless system(cl.tex_command(tex_file))
+    tex_dir = input_dir(cl.input_file)
+    tex_file = erb_to_tex(cl.input_file, tex_dir) if cl.input_file
+    run_tex(cl.tex_command(tex_file), tex_dir)
+  end
+
+  # Run the TeX program, adding add_dir to the front of TEXINPUTS, unless it is
+  # already in TEXINPUTS.
+  def self.run_tex(cmd, add_dir = nil)
+    new_env = {}
+    add_dir = File.absolute_path(File.expand_path(add_dir))
+    unless ENV['TEXINPUTS'].split(File::PATH_SEPARATOR)
+             .reject { |p| p.strip.empty? }
+             .any? { |p| add_dir == File.absolute_path(File.expand_path(p)) }
+      new_env['TEXINPUTS'] = "#{add_dir}:#{ENV['TEXINPUTS']}"
+    end
+    unless system(cmd)
       stderr.puts "Call to #{cl.tex_program} failed."
       exit $?
     end
+    $?
   end
 
-  def self.erb_to_tex(in_file)
+  def self.input_dir(in_file)
+    return nil unless in_file
+    in_file_absolute = File.absolute_path(File.expand_path(in_file))
+    in_file_absolute[/\A(.*\/)([^\/.]+)(\.[\w.]+)\z/, 1]
+  end
+
+  # Pre-process the input file with erubis, adding the add_dir to the front of
+  # the ruby load path if its not already in the load path.  Return the name of
+  # the processed file.
+  def self.erb_to_tex(in_file, add_dir = nil)
+    add_dir = File.absolute_path(File.expand_path(add_dir))
+    unless $LOAD_PATH
+             .any? { |p| add_dir == File.absolute_path(File.expand_path(p)) }
+      $LOAD_PATH.unshift(add_dir)
+    end
+
     in_contents = nil
     File.open(in_file) do |f|
       in_contents = f.read

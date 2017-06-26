@@ -1,15 +1,12 @@
-require 'rake/testtask'
+require 'bundler/gem_tasks'
+require 'rspec/core/rake_task'
+require 'rdoc/task'
 
-require 'bundler'
-Bundler::GemHelper.install_tasks
-
-task :default => :test
-desc "Run all the unit tests"
-task :test do
-  Dir.foreach('test') do |t|
-    next if t == 'test_helper.rb'
-    next if t =~ /^\.\.?/
-    cmd = "ruby -I 'test' -C 'test' #{t}"
-    system cmd
-  end
+RDoc::Task.new do |rdoc|
+  rdoc.main = 'README.rdoc'
+  rdoc.rdoc_files.include('README.rdoc', 'lib')
 end
+
+RSpec::Core::RakeTask.new(:spec)
+
+task default: :spec

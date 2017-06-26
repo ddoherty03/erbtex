@@ -10,5 +10,3 @@ auto
 /.bundle/bin
 *.fdb_latexmk
 *.fls
-/examples/TrigTable.tex
-/examples/TrigTable2.tex

@@ -4,6 +4,8 @@ module ErbTeX
   describe CommandLine do
     describe 'parsing' do
       before :all do
+        # Without this fakery, $0 would be rspec when these specs are run.
+        $0 = 'erbtex'
         # Note: ARGV does not include the name of the program as the first
         # element, as in C.
         @argv_with_file =

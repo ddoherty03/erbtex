@@ -45,11 +45,13 @@ module ErbTeX
   # already in TEXINPUTS.
   def self.run_tex(cmd, add_dir = nil)
     new_env = {}
-    add_dir = File.absolute_path(File.expand_path(add_dir))
-    unless ENV['TEXINPUTS'].split(File::PATH_SEPARATOR)
-             .reject { |p| p.strip.empty? }
-             .any? { |p| add_dir == File.absolute_path(File.expand_path(p)) }
-      new_env['TEXINPUTS'] = "#{add_dir}:#{ENV['TEXINPUTS']}"
+    if add_dir
+      add_dir = File.absolute_path(File.expand_path(add_dir))
+      unless ENV['TEXINPUTS'].split(File::PATH_SEPARATOR)
+               .reject { |p| p.strip.empty? }
+               .any? { |p| add_dir == File.absolute_path(File.expand_path(p)) }
+        new_env['TEXINPUTS'] = "#{add_dir}:#{ENV['TEXINPUTS']}"
+      end
     end
     unless system(cmd)
       $stderr.puts "Call to '#{cmd}' failed."

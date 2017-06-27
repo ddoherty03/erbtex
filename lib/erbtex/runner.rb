@@ -52,8 +52,8 @@ module ErbTeX
       new_env['TEXINPUTS'] = "#{add_dir}:#{ENV['TEXINPUTS']}"
     end
     unless system(cmd)
-      stderr.puts "Call to #{cl.tex_program} failed."
-      exit $?
+      $stderr.puts "Call to '#{cmd}' failed."
+      exit $?.exitstatus
     end
     $?
   end

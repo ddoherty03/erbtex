@@ -1,10 +1,13 @@
-#! /usr/bin/env ruby
+# Conditional added to prevent running bundler/setup twice when it already has
+# erbtex in the LOAD_PATH.  Failure to do this was causing bundler to setup for
+# the wrong Gemfile if it was run in the development directory of another gem,
+# for example, ydl.  This only happened on saturn for some reason that I don't
+# understand, but this kludge made it work.
 
-require 'rubygems'
-require 'bundler/setup'
+require 'bundler/setup' if $LOAD_PATH.none? { |p| p =~ /erbtex/ }
 
+require 'shellwords'
 require 'erubis'
-require 'pry'
 
 require 'erbtex/version'
 require 'erbtex/command_line'

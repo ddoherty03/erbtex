@@ -1,26 +1,28 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 
+# Name space for erbtex command.
 module ErbTeX
   class NoInputFile < StandardError; end
 
+  # Class to record and manipulate the command line typed by the user.
   class CommandLine
     attr_reader :erbtex_name, :tex_program, :tex_options
     attr_reader :tex_commands, :input_file
 
     def initialize(argv)
       # Note: argv will be the command line arguments after processing by the
-      # shell, so if we see things such as '&', '~', '\' in the args, these were
-      # quoted by the user on the command-line and need no special treatment
-      # here. For example, '~/junk' on the commandline will show up here as
-      # '/home/ded/junk'. If we see '~/junk', that means the user has quoted the
-      # ~ on the command line with something like '\~junk', so we should assume
-      # that the user wants to keep it that way. Likewise, an arg with spaces in
-      # it will have been quoted by the user to be seen as a single argument.
-      # When we output these for use by the shell in the system command, we
-      # should apply shellquote to everything so that the receiving shell sees
-      # the args in the same way.
+      # shell, so if we see things such as '&', '~', '\' in the args, these
+      # were quoted by the user on the command-line and need no special
+      # treatment here. For example, '~/junk' on the commandline will show up
+      # here as '/home/ded/junk'. If we see '~/junk', that means the user has
+      # quoted the ~ on the command line with something like '\~junk', so we
+      # should assume that the user wants to keep it that way. Likewise, an
+      # arg with spaces in it will have been quoted by the user to be seen as
+      # a single argument.  When we output these for use by the shell in the
+      # system command, we should apply shellquote to everything so that the
+      # receiving shell sees the args in the same way.
 
-      @erbtex_name = File.basename($0)
+      @erbtex_name = File.basename($PROGRAM_NAME)
 
       # Find the tex_commands
       @tex_commands = []
@@ -111,14 +113,14 @@ end
 # program is run, regardless of any input file location; or, in a few
 # cases, output is to standard output.
 
-# For example, if you run ‘tex /tmp/foo’, for example, the output will
+# For example, if you run 'tex /tmp/foo', for example, the output will
 # be in ./foo.dvi and ./foo.log, not /tmp/foo.dvi and /tmp/foo.log.
 
-# You can use the ‘-output-directory’ option to cause all output files
+# You can use the '-output-directory' option to cause all output files
 # that would normally be written in the current directory to be written
 # in the specified directory instead. See Common options.
 
-# If the current directory is not writable, and ‘-output-directory’ is
+# If the current directory is not writable, and '-output-directory' is
 # not specified, the main programs (TeX, Metafont, MetaPost, and BibTeX)
 # make an exception: if the config file or environment variable value
 # TEXMFOUTPUT is set (it is not by default), output files are written to
@@ -126,5 +128,5 @@ end
 
 # TEXMFOUTPUT is also checked for input files, as TeX often generates
 # files that need to be subsequently read; for input, no suffixes (such
-# as ‘.tex’) are added by default and no exhaustive path searching is
+# as '.tex') are added by default and no exhaustive path searching is
 # done, the input name is simply checked as given.

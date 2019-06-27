@@ -56,10 +56,10 @@
 ## increments of step
 
    require 'bigdecimal'
-   step = BigDecimal.new("0.001")
+   step = BigDecimal("0.001")
    one = BigDecimal("1.0")
    z0 = BigDecimal("0.0")
-   p2 = BigDecimal.new((Math::PI / 2.0).to_s)
+   p2 = BigDecimal((Math::PI / 2.0).to_s)
 -:}
 
 %% Treat the first line of the table, for an x value of 0 specially
@@ -76,10 +76,10 @@
 %% x one step beyond 0 and pre-computes some of the functions
 {:   x = z0 + step
      while (x < p2) do
-      tanx = BigDecimal.new(Math.tan(x).to_s)
-      cotx = one / BigDecimal.new(Math.tan(x).to_s)
-      secx = one / BigDecimal.new(Math.cos(x).to_s)
-      cscx = one / BigDecimal.new(Math.sin(x).to_s)
+      tanx = BigDecimal(Math.tan(x).to_s)
+      cotx = one / BigDecimal(Math.tan(x).to_s)
+      secx = one / BigDecimal(Math.cos(x).to_s)
+      cscx = one / BigDecimal(Math.sin(x).to_s)
 :}
 
 {:

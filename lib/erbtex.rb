@@ -8,6 +8,7 @@ require 'bundler/setup' if $LOAD_PATH.none? { |p| p =~ /erbtex/ }
 
 require 'shellwords'
 require 'erubis'
+require 'fat_core'
 
 require 'erbtex/version'
 require 'erbtex/command_line'

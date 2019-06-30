@@ -23,6 +23,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
 
   gem.add_dependency 'erubis'
+  gem.add_dependency 'fat_core'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'bundler'
   gem.add_development_dependency 'rspec'

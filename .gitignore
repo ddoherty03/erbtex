@@ -1,8 +1,6 @@
 *.aux
 *.log
-*.etx
 *.out
-*.pdf
 *.gem
 *.synctex.gz
 etc

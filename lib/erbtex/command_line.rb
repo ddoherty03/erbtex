@@ -6,8 +6,8 @@ module ErbTeX
 
   # Class to record and manipulate the command line typed by the user.
   class CommandLine
-    attr_reader :erbtex_name, :tex_program, :tex_options
-    attr_reader :tex_commands, :input_file
+    attr_reader :erbtex_name, :tex_program, :tex_args, :tex_commands
+    attr_reader :input_file, :print_version, :print_help
 
     def initialize(argv)
       # Note: argv will be the command line arguments after processing by the
@@ -57,6 +57,7 @@ module ErbTeX
 
       # The last argument, assuming it does not start with a '-' or '&', is
       # assumed to be the name of the input_file.
+      @input_file = nil
       if !argv.empty? && argv[-1] !~ /\A[-&]/
         @input_file = CommandLine.expand_input_file(argv.pop)
       end
@@ -64,12 +65,12 @@ module ErbTeX
       # What remains in argv should be the tex program's '-options', which
       # should be passed through untouched. So, can form the full command line
       # for tex_processing
-      @tex_options = argv.dup
+      @tex_args = argv.dup
     end
 
     def tex_command(tex_file = input_file)
       "#{tex_program} " \
-      "#{tex_options.shelljoin} " \
+      "#{tex_args.shelljoin} " \
       "#{tex_commands.shelljoin} " \
       "#{tex_file}"
         .strip.squeeze(' ')
@@ -78,19 +79,25 @@ module ErbTeX
     # Return the name of the input file based on the name given in the command
     # line. Try to find the right extension for the input file if none is given.
     def self.expand_input_file(input_file)
-      full_ext = input_file[/\A(.*)(\.[\w.]+)\z/, 2]
-      if full_ext.nil? || full_ext.empty?
-        if File.exist?("#{input_file}.tex.erb")
-          "#{input_file}.tex.erb"
-        elsif File.exist?("#{input_file}.tex")
-          "#{input_file}.tex"
-        elsif File.exist?("#{input_file}.erb")
-          "#{input_file}.erb"
+      return '' if input_file.blank?
+
+      md = %r{\A(.*)(\.[\w.]+)?\z}.match(input_file)
+      if md
+        input_base = md[1]
+        input_ext = md[2]
+      end
+      if input_ext.nil?
+        if File.exist?("#{input_base}.tex.erb")
+          "#{input_base}.tex.erb"
+        elsif File.exist?("#{input_base}.tex")
+          "#{input_base}.tex"
+        elsif File.exist?("#{input_base}.erb")
+          "#{input_base}.erb"
         else
-          input_file
+          input_base
         end
       else
-        input_file
+        input_base
       end
     end
   end

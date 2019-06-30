@@ -2,9 +2,9 @@
 
 ** Description
 
-~erbtex~ is a ruby gem that provides a command line program that pre-processes
-TeX and LaTeX source files with ruby's erubis and then passes the resulting file
-along to a real TeX program.
+~erbtex~ is a ruby gem that provides the ~erbtex~ command line program that
+pre-processes TeX and LaTeX source files with ruby's [[http://www.kuwata-lab.com/erubis][erubis]] and then passes
+the resulting file along to a real TeX program.
 
 ** Installation
 
@@ -16,35 +16,40 @@ Install ~erbtex~ with:
 
 ** Usage
 
-After the gem is installed, ~erbtex~ is placed in your PATH. ~erbtex~ recognizes
-only one command-line option, --invoke=<tex_program>, which specifies what TeX
-variant will process the TeX file after erubis has pre-proceesed the input file.
-By default, ~erubis~ uses ~pdflatex~ if no --invoke option is given.
+After the gem is installed, ~erbtex~ is placed in your PATH. ~erbtex~
+recognizes only one command-line option, ~--invoke=<tex_program>~, which
+specifies what TeX variant will process the TeX file after erubis has
+pre-proceesed the input file.  By default, ~erbtex~ uses ~pdflatex~ if no
+--invoke option is given.
 
-~Erbtex~ will then read the input file and execute any ruby code between the
-special delimiters `{:` and `:}` instead of the erubis default of `<% %>`. The
-brace-colon form of delimiters is less disruptive of syntax highlighting than
-the default delimiters, which get confused with TeX and LaTeX comments. Any text
-not between the delimiters is passed through untouched to the TeX program.
+~Erbtex~ reads the input file and executes any ruby code between the special
+delimiters ~{:~ and ~:}~.  This brace-colon form of delimiters is less
+disruptive of syntax highlighting than ~erubis~'s default delimiters ~<%~ and
+~%>~ delimiters, which often get confused by syntax-enabled editors with TeX
+and LaTeX comments.
 
-If the opening delimiter has an ~=~ appended to it, the delimited ruby
-expression is converted into a string (with ruby's ~.to_s~ method) and inserted
-in-place into the TeX manuscript at that point. For example, the text ~{:=
-"Hello, world".reverse :}~ places the string ~'dlrow ,olleH'~ at that point in
-the TeX file.
+If the opening delimiter is instead ~{:=~, the delimited ruby expression is
+converted into a string (with ruby's ~.to_s~ method) and inserted in-place
+into the TeX manuscript at that point. For example, the text ~{:= "Hello,
+world".reverse :}~ places the string ~dlrow ,olleH~ at that point in the TeX
+file.
+
+Any text /not/ enclosed in these delimiters is passed through untouched to the
+TeX program.
 
 Without the `=` the ruby code is simply executed. You can use these, for
-example, to ~require~ ruby libraries or to embed loops into the file.
-
-Loops started in one ruby fragment can be continued or terminated in a later
-fragment, and variables defined in one fragment in one fragment are visible in
-later fragments according to Ruby's usual scoping rules. The result is that you
-can use the ruby programming language to greatly increase the computational
+example, to ~require~ ruby libraries or to embed loops into the file.  Loops
+started in one delimited ruby fragment can be continued or terminated in a
+later fragment, and variables defined in one fragment are accessible in later
+fragments according to Ruby's usual scoping rules. The result is that you can
+use the ruby programming language to greatly increase the computational
 capabilities of a normal TeX or LaTeX.
 
-The resulting output is then processed as a normal TeX file.
+You can get the version with the --version flag and help with --help.
 
-** Example
+** Examples
+
+*** Square Roots
 
 For example, the following LaTeX file will produce a table of square
 roots when run through erbtex.  It uses a ruby iterator to supply the
@@ -68,6 +73,7 @@ LaTeX.
   % The following line starts a ruby enumerator loop but does not
   % produce any output, since the delimiters are {: :}.
   {: 0.upto(100).each do |x| :}
+
   % But the following two lines produce output since the opening delimiter is
   % '{:='. Both call the sprintf method in ruby via the percent operator, and the
   % second line calls ruby's Math module to compute the square root. Notice that
@@ -76,19 +82,20 @@ LaTeX.
 
     {:= "\\mathversion{bold}$%0.4f$" % x :}&
     {:= "$%0.8f$" % Math.sqrt(x) :}\\
+
+  % End of the loop started above.
   {: end :}
-  \end{longtable}
+    \end{longtable}
   \end{document}
 #+END_SRC
 
-With the above in file `roots.tex`, running `$ erbtex roots.tex` at the command
-line will generate a `PDF` file with a nicely typeset table of square roots.
-
-As a by-product, the pre-processed file ~roots.etx~ is left in the same
-directory, so you can see what the effect of the erbtex fragments were. This is
-often very handy when you are trying to debug the document; otherwise, feel free
-to delete it. Here, for example is a portion of the `roots.etx` file generated
-by the foregoing:
+With the above in file ~roots.tex~, running ~$ erbtex roots.tex~ at the
+command line will generate a `PDF` file with a nicely typeset table of square
+roots.  The generated pdf file can be seen [[file:examples/roots.pdf][here]].  As a by-product, the
+pre-processed file ~roots.etx~ is left in the same directory, so you can see
+what the effect of the erbtex fragments were. This is often very handy when
+you are trying to debug the document; otherwise, feel free to delete it. Here,
+for example is a portion of the `roots.etx` file generated by the foregoing:
 
 #+BEGIN_SRC latex
     \begin{document}
@@ -133,5 +140,8 @@ by the foregoing:
 
 And many more lines like it.
 
+*** Trigonometry Table
+
 The examples directory installed with the erbtex gem has a few more
-examples.
+examples, including a [[file:examples/TrigTable2.pdf][large trigonometry table]] generated from a relatively
+small [[file:examples/TrigTable2.tex][input file]].

@@ -4,16 +4,49 @@ require 'English'
 
 # Name space module for erbtex program.
 module ErbTeX
-  def self.run(cmd)
-    report_env
-    tex_dir = input_dir(cmd.input_file)
-    tex_file = erb_to_tex(cmd.input_file, tex_dir) if cmd.input_file
-    run_tex(cmd.tex_command(tex_file), tex_dir)
+  def self.run(cmd_line)
+    report_version && exit(0) if cmd_line.print_version
+    report_help && exit(0) if cmd_line.print_help
+
+    tex_dir = input_dir(cmd_line.input_file)
+    tex_file = erb_to_tex(cmd_line.input_file, tex_dir) if cmd_line.input_file
+    run_tex(cmd_line.tex_command(tex_file), tex_dir)
   end
 
-  def self.report_env
-    warn "Ruby VERSION: #{RUBY_VERSION}"
-    warn "PATH: #{ENV['PATH']}"
+  def self.report_version
+    puts "erbtex version: #{ErbTeX::VERSION}"
+    puts "Ruby version: #{RUBY_VERSION}"
+    begin
+      erubis_version = `erubis -v`
+    rescue Errno::ENOENT
+      warn 'Warning: erubis does not appear to be installed!'
+      exit(1)
+    end
+    puts "erubis version: #{erubis_version}"
+    true
+  end
+
+  def self.report_help
+    puts <<~HELP
+      Usage: erbtex [erbtex_options] [tex_prog_args] [file]
+
+      erbtex_options are:
+        --version           - print the version of the erbtex gem, ruby and erubis
+        --help              - print this help message
+        --invoke=<tex_prog> - after pre-processing, invoke <tex_prog> on the
+                              resulting file, tex_prog is pdflatex by default
+
+      All other arguments, except possibly the last, are passed unaltered to
+      the tex_prog for interpretation.  If any of these arguments starts with a
+      '\\' or '&', then all remaining arguments are passed to tex-prog for
+      interpretation, even the final argument.
+
+      The last argument is taken as the input file name unless it  or any earlier
+      argument starts with a '\\' or '&', in which case it is also passed along
+      as an argument to the tex-prog.
+
+    HELP
+    true
   end
 
   # Run the TeX program, adding add_dir to the front of TEXINPUTS, unless it is

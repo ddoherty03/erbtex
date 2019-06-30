@@ -41,6 +41,20 @@ module ErbTeX
         argv.reject! { |a| a =~ /\A--invoke=(\w+)/ }
       end
 
+      # Look for our --version
+      @print_version = false
+      if argv.any? { |a| a =~ /\A--version/ }
+        @print_version = true
+        argv.reject! { |a| a =~ /\A--version/ }
+      end
+
+      # Look for our --help
+      @print_help = false
+      if argv.any? { |a| a =~ /\A--help/ }
+        @print_help = true
+        argv.reject! { |a| a =~ /\A--help/ }
+      end
+
       # The last argument, assuming it does not start with a '-' or '&', is
       # assumed to be the name of the input_file.
       if !argv.empty? && argv[-1] !~ /\A[-&]/

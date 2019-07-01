@@ -113,7 +113,16 @@ module ErbTeX
     in_file_absolute = File.absolute_path(File.expand_path(in_file))
     in_dir = File.dirname(in_file_absolute)
     in_base = File.basename(in_file_absolute)
-    in_ext = File.extname(in_file_absolute)
+    # Note that File.extname only gets the last extension.  We want all
+    # extensions following the basename, but we don't count a dot at the
+    # beginning of a filename as introducing an extension.  So, we cook our
+    # own solution here with Regexp's.
+    if in_base =~ /[^.](.[^.]+)+\z/
+      in_ext = $1
+      in_base = File.basename(in_base, in_ext)
+    else
+      in_ext = ''
+    end
 
     out_ext = if in_ext.empty?
                 if File.exist?("#{in_file}.tex.erb")

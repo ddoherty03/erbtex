@@ -59,7 +59,7 @@ module ErbTeX
       # assumed to be the name of the input_file.
       @input_file = nil
       if !argv.empty? && argv[-1] !~ /\A[-&]/
-        @input_file = CommandLine.expand_input_file(argv.pop)
+        @input_file = ErbTeX.expand_input_file(argv.pop)
       end
 
       # What remains in argv should be the tex program's '-options', which
@@ -74,31 +74,6 @@ module ErbTeX
       "#{tex_commands.shelljoin} " \
       "#{tex_file}"
         .strip.squeeze(' ')
-    end
-
-    # Return the name of the input file based on the name given in the command
-    # line. Try to find the right extension for the input file if none is given.
-    def self.expand_input_file(input_file)
-      return '' if input_file.blank?
-
-      md = %r{\A(.*)(\.[\w.]+)?\z}.match(input_file)
-      if md
-        input_base = md[1]
-        input_ext = md[2]
-      end
-      if input_ext.nil?
-        if File.exist?("#{input_base}.tex.erb")
-          "#{input_base}.tex.erb"
-        elsif File.exist?("#{input_base}.tex")
-          "#{input_base}.tex"
-        elsif File.exist?("#{input_base}.erb")
-          "#{input_base}.erb"
-        else
-          input_base
-        end
-      else
-        input_base
-      end
     end
   end
 end

@@ -18,6 +18,16 @@ module ErbTeX
             -recorder -shell-escape -src-specials cr,display,hbox,math,par
             -translate-file willy -version &myformat file_name.tex.erb
           )
+        @argv_with_remote_file =
+          %w(
+            -draftmode -enc -etex -file-line-error -fmt junk
+            -halt-on-error -ini -interaction batchmode -ipc -ipc-start
+            -jobname junk -kpathsea-debug 8 -mktex tex --invoke=pdflatex
+            -mltex -nomktex tfm -ouptput-comment This\ is\ a\ long\ comment
+            -output-directory ~/texmf/tex -parse-first-line -progname pdflatex
+            -recorder -shell-escape -src-specials cr,display,hbox,math,par
+            -translate-file willy -version &myformat example_files/file_name.tex.erb
+          )
         @argv_with_invoke_and_file =
           %w(
             --invoke=lualatex
@@ -66,6 +76,22 @@ module ErbTeX
           -output-directory \~/texmf/tex -parse-first-line -progname pdflatex
           -recorder -shell-escape -src-specials cr,display,hbox,math,par
           -translate-file willy -version \&myformat file_name.tex.erb
+        EOS
+      end
+
+      it 'parse command line with remote file name' do
+        cl = CommandLine.new(@argv_with_remote_file)
+        expect(cl.erbtex_name).to eq('erbtex')
+        expect(cl.tex_program).to eq('pdflatex')
+        expect(cl.input_file).to eq('example_files/file_name.tex.erb')
+        expect(cl.tex_command).to eq(<<~'EOS'.tr("\n", ' ').strip)
+          pdflatex -draftmode -enc -etex -file-line-error -fmt junk -halt-on-error
+          -ini -interaction batchmode -ipc -ipc-start -jobname junk -kpathsea-debug 8
+          -mktex tex -mltex -nomktex tfm
+          -ouptput-comment This\ is\ a\ long\ comment
+          -output-directory \~/texmf/tex -parse-first-line -progname pdflatex
+          -recorder -shell-escape -src-specials cr,display,hbox,math,par
+          -translate-file willy -version \&myformat example_files/file_name.tex.erb
         EOS
       end
 
@@ -118,55 +144,6 @@ module ErbTeX
           \\input\{junk.tex\} \\print these \\items \\end not_a_file
           file_name
         EOS
-      end
-    end
-
-    describe 'expand input file' do
-      before :all do
-        unless Dir.exist?('tmp')
-          FileUtils.mkdir_p('tmp')
-        end
-      end
-
-      before :each do
-        FileUtils.rm_f Dir.glob('tmp/*')
-      end
-
-      after :all do
-        FileUtils.rm_rf('tmp')
-      end
-
-      it 'expand file name with no extension and .tex existing' do
-        FileUtils.touch('tmp/junk.tex')
-        expect(CommandLine.expand_input_file('tmp/junk')).to eq('tmp/junk.tex')
-      end
-
-      it 'expand file name with no extension and .tex.erb existing' do
-        FileUtils.touch('tmp/junk.tex.erb')
-        expect(CommandLine.expand_input_file('tmp/junk'))
-          .to eq('tmp/junk.tex.erb')
-      end
-
-      it 'expand file name with no extension and .erb existing' do
-        FileUtils.touch('tmp/junk.erb')
-        expect(CommandLine.expand_input_file('tmp/junk'))
-          .to eq('tmp/junk.erb')
-      end
-
-      it 'expand file name with .tex extension and existing' do
-        FileUtils.touch('tmp/junk.tex')
-        expect(CommandLine.expand_input_file('tmp/junk'))
-          .to eq('tmp/junk.tex')
-      end
-
-      it 'expand file name with .tex extension and not existing' do
-        expect(CommandLine.expand_input_file('tmp/junk.tex'))
-          .to eq('tmp/junk.tex')
-      end
-
-      it 'expand file name with funny extension and not existing' do
-        expect(CommandLine.expand_input_file('tmp/junk.arb'))
-          .to eq('tmp/junk.arb')
       end
     end
   end

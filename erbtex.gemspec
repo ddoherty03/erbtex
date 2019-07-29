@@ -7,15 +7,14 @@ Gem::Specification.new do |gem|
   gem.version = ErbTeX::VERSION
   gem.platform = Gem::Platform::RUBY
   gem.date = %q{2012-05-13}
-  gem.homepage = ''
+  gem.homepage = 'https://github.com/ddoherty03/erbtex'
   gem.authors = ['Daniel E. Doherty']
-  gem.email = %q{ded-erbtex@ddoherty.net}
+  gem.email = %q{ded@ddoherty.net}
   gem.summary = %q{Preprocesses TeX and LaTeX files with erubis for ruby.}
-  gem.description = %q{Create a local link called pdflatex to erbtex and it will
-                     act just like pdflatex except that it will process ruby fragments
-                     between {: and :} markers, greatly expanding the ability to generate
+  gem.description = %q{erbtex will act just like pdflatex except that it will
+                     process ruby fragments between {: and :} markers,
+                     greatly expanding the ability to generate
                      automated TeX and LaTeX documents.}
-
   gem.files         = `git ls-files`.split("\n")
   gem.files.delete_if { |f| f =~ /\.(log|etc|aux|etx|pdf|gem|tmp)$/ }
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

@@ -18,6 +18,16 @@ module ErbTeX
             -recorder -shell-escape -src-specials cr,display,hbox,math,par
             -translate-file willy -version &myformat file_name.tex.erb
           )
+        @argv_with_remote_file =
+          %w(
+            -draftmode -enc -etex -file-line-error -fmt junk
+            -halt-on-error -ini -interaction batchmode -ipc -ipc-start
+            -jobname junk -kpathsea-debug 8 -mktex tex --invoke=pdflatex
+            -mltex -nomktex tfm -ouptput-comment This\ is\ a\ long\ comment
+            -output-directory ~/texmf/tex -parse-first-line -progname pdflatex
+            -recorder -shell-escape -src-specials cr,display,hbox,math,par
+            -translate-file willy -version &myformat example_files/file_name.tex.erb
+          )
         @argv_with_invoke_and_file =
           %w(
             --invoke=lualatex
@@ -66,6 +76,22 @@ module ErbTeX
           -output-directory \~/texmf/tex -parse-first-line -progname pdflatex
           -recorder -shell-escape -src-specials cr,display,hbox,math,par
           -translate-file willy -version \&myformat file_name.tex.erb
+        EOS
+      end
+
+      it 'parse command line with remote file name' do
+        cl = CommandLine.new(@argv_with_remote_file)
+        expect(cl.erbtex_name).to eq('erbtex')
+        expect(cl.tex_program).to eq('pdflatex')
+        expect(cl.input_file).to eq('example_files/file_name.tex.erb')
+        expect(cl.tex_command).to eq(<<~'EOS'.tr("\n", ' ').strip)
+          pdflatex -draftmode -enc -etex -file-line-error -fmt junk -halt-on-error
+          -ini -interaction batchmode -ipc -ipc-start -jobname junk -kpathsea-debug 8
+          -mktex tex -mltex -nomktex tfm
+          -ouptput-comment This\ is\ a\ long\ comment
+          -output-directory \~/texmf/tex -parse-first-line -progname pdflatex
+          -recorder -shell-escape -src-specials cr,display,hbox,math,par
+          -translate-file willy -version \&myformat example_files/file_name.tex.erb
         EOS
       end
 

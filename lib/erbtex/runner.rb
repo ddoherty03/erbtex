@@ -57,7 +57,9 @@ module ErbTeX
   def self.run_tex(cmd, in_dir = nil)
     # If the input file is located in another directory (in_dir), add that
     # directory to TEXINPUTS if its not already there so that the input file
-    # can \include or \input files using relative file names.
+    # can \include or \input files using relative file names.  Place it after
+    # the current directory '.' so that an plain file name is still
+    # interpreted relative to the current working directory.
     new_env = {}
     if in_dir
       in_dir = File.absolute_path(File.expand_path(in_dir))
@@ -65,7 +67,7 @@ module ErbTeX
       unless ENV['TEXINPUTS'].split(File::PATH_SEPARATOR)
                .reject { |p| p.strip.empty? }
                .any? { |p| in_dir == File.absolute_path(File.expand_path(p)) }
-        new_env['TEXINPUTS'] = "#{in_dir}:#{ENV['TEXINPUTS']}"
+        new_env['TEXINPUTS'] = ".:#{in_dir}:#{ENV['TEXINPUTS']}"
       end
     end
     # Call cmd with the environment augmented by possibly expanded TEXINPUTS

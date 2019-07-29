@@ -8,9 +8,9 @@ module ErbTeX
     report_version && exit(0) if cmd_line.print_version
     report_help && exit(0) if cmd_line.print_help
 
-    tex_dir = input_dir(cmd_line.input_file)
     tex_file = erb_to_tex(cmd_line.input_file, tex_dir) if cmd_line.input_file
     run_tex(cmd_line.tex_command(tex_file), tex_dir)
+    in_dir = parse_file_name(cmd_line.input_file)[:dir]
   end
 
   def self.report_version
@@ -81,13 +81,6 @@ module ErbTeX
     $CHILD_STATUS
   end
 
-  def self.input_dir(in_file)
-    return nil unless in_file
-
-    in_file_absolute = File.absolute_path(File.expand_path(in_file))
-    in_file_absolute[%r{\A(.*/)([^/.]+)(\.[\w.]+)\z}, 1]
-  end
-
   # Pre-process the input file with erubis, adding the add_dir to the front of
   # the ruby load path if its not already in the load path.  Return the name of
   # the processed file.
@@ -108,7 +101,7 @@ module ErbTeX
 
     pat = ENV['ERBTEX_PATTERN'] || '{: :}'
 
-    out_file = out_file_name(in_file)
+    out_file = ErbTeX.out_file_name(in_file)
     File.open(out_file, 'w') do |f|
       er = ::Erubis::Eruby.new(in_contents, pattern: pat)
       f.write(er.result)

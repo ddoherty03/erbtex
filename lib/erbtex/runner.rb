@@ -72,12 +72,14 @@ module ErbTeX
     end
     # Call cmd with the environment augmented by possibly expanded TEXINPUTS
     # environment variable.
+    warn "TEXINPUTS set to: #{new_env['TEXINPUTS']}"
     unless system(new_env, cmd)
       warn "Call to '#{cmd}' failed."
       exit $CHILD_STATUS
     end
     # Run a second time unless its latexmk
     unless cmd =~ /\A *latexmk/
+      warn "TEXINPUTS set to: #{new_env['TEXINPUTS']}"
       unless system(new_env, cmd)
         warn "Call to '#{cmd}' failed."
         exit $CHILD_STATUS
@@ -91,6 +93,8 @@ module ErbTeX
   # the input file can be found if they are in the in_dir.  Return the name of
   # the output file.
   def self.erb_to_tex(in_file, in_dir = nil)
+    warn '================================================================'
+    warn 'Erubis phase of processing ...'
     # Add input to ruby LOAD_PATH, $:,if its not already there.
     if File.exist?(in_dir)
       in_dir = File.absolute_path(File.expand_path(in_dir))
@@ -101,6 +105,7 @@ module ErbTeX
     end
 
     # Read the input
+    warn "  Erubis reading from #{in_file}..."
     in_contents = nil
     File.open(in_file) do |f|
       in_contents = f.read
@@ -110,10 +115,13 @@ module ErbTeX
     pat = ENV['ERBTEX_PATTERN'] || '{: :}'
 
     out_file = ErbTeX.out_file_name(in_file)
+    warn "  Erubis writing to #{out_file}..."
     File.open(out_file, 'w') do |f|
       er = ::Erubis::Eruby.new(in_contents, pattern: pat)
       f.write(er.result)
     end
+    warn 'done'
+    warn '================================================================'
     out_file
   rescue SystemCallError => e
     warn "Error: #{e}"

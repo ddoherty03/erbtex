@@ -75,17 +75,17 @@ module ErbTeX
     warn "TEXINPUTS set to: #{new_env['TEXINPUTS']}"
     unless system(new_env, cmd)
       warn "Call to '#{cmd}' failed."
-      exit $CHILD_STATUS
+      exit $CHILD_STATUS.to_i
     end
     # Run a second time unless its latexmk
     unless cmd =~ /\A *latexmk/
       warn "TEXINPUTS set to: #{new_env['TEXINPUTS']}"
       unless system(new_env, cmd)
         warn "Call to '#{cmd}' failed."
-        exit $CHILD_STATUS
+        exit $CHILD_STATUS.to_i
       end
     end
-    $CHILD_STATUS
+    $CHILD_STATUS.success?
   end
 
   # Pre-process the input file with erubis, adding the in_dir to the front of

@@ -85,7 +85,7 @@ module ErbTeX
         exit $CHILD_STATUS.to_i
       end
     end
-    $CHILD_STATUS.success?
+    $CHILD_STATUS
   end
 
   # Pre-process the input file with erubis, adding the in_dir to the front of

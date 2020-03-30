@@ -33,7 +33,7 @@ GEM
     pry-byebug (3.8.0)
       byebug (~> 11.0)
       pry (~> 0.10)
-    pry-doc (1.0.0)
+    pry-doc (1.1.0)
       pry (~> 0.11)
       yard (~> 0.9.11)
     rake (13.0.1)
@@ -53,7 +53,7 @@ GEM
     thread_safe (0.3.6)
     tzinfo (1.2.6)
       thread_safe (~> 0.1)
-    yard (0.9.20)
+    yard (0.9.24)
     zeitwerk (2.3.0)
 
 PLATFORMS

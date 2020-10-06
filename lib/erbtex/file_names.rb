@@ -1,3 +1,4 @@
+# Name space module for ErbTeX.
 module ErbTeX
   # Given an arbitrary file name, parse it into its components in one go.  It
   # separates three parts of a filename: (1) the directory, if any, (2) the

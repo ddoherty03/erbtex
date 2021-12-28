@@ -55,7 +55,7 @@
 ## increments of step.
 
    require 'bigdecimal'
-   require 'dms'
+   require_relative 'dms'
    DMS.precision = 0
    step = DMS.new(0, 0, 30)
    one = BigDecimal("1.0")

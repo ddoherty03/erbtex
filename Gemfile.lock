@@ -1,29 +1,28 @@
 PATH
   remote: .
   specs:
-    erbtex (0.4.6)
+    erbtex (0.4.7)
       erubis
       fat_core
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.1.1)
+    activesupport (7.0.0)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-      zeitwerk (~> 2.3)
     byebug (11.1.3)
     coderay (1.1.3)
-    concurrent-ruby (1.1.7)
+    concurrent-ruby (1.1.9)
     damerau-levenshtein (1.3.3)
     diff-lcs (1.4.4)
     erubis (2.7.0)
-    fat_core (4.8.3)
+    fat_core (4.9.2)
       activesupport
       damerau-levenshtein
-    i18n (1.8.7)
+    i18n (1.8.11)
       concurrent-ruby (~> 1.0)
     method_source (1.0.0)
     minitest (5.14.3)
@@ -53,7 +52,6 @@ GEM
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     yard (0.9.26)
-    zeitwerk (2.4.2)
 
 PLATFORMS
   ruby
@@ -69,4 +67,4 @@ DEPENDENCIES
   rspec
 
 BUNDLED WITH
-   2.2.3
+   2.3.3

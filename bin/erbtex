@@ -3,6 +3,11 @@
 require 'erbtex'
 
 module ErbTeX
+  if ARGV.empty?
+    wanr "usage: erbtex [LaTex_filename]"
+    exit(1)
+  end
+
   cl = CommandLine.new(ARGV)
-  exit ErbTeX.run(cl).exitstatus
+  exit ErbTeX.run(cl)
 end

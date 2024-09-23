@@ -5,14 +5,14 @@
 class DMS
   include Comparable
 
-  attr_reader :degrees, :minutes, :seconds
+  attr_accessor :degrees, :minutes, :seconds
+  attr_accessor :precision
 
-  @@precision = 4
-
-  def initialize(deg, min = 0, sec = 0.0)
+  def initialize(deg, min = 0, sec = 0.0, precision: 4)
     @degrees = deg.to_i
     @minutes = min.to_i
     @seconds = sec.to_f
+    @precision = precision
     normalize
   end
 
@@ -31,16 +31,12 @@ class DMS
     DMS.new(degrees, minutes, seconds)
   end
 
-  def self.precision=(p)
-    @@precision = p
-  end
-
   def to_s
-    "#{@degrees}* #{@minutes}' %0.*f''" % [@@precision, @seconds]
+    "#{degrees}* #{minutes}' %0.*f''" % [precision, seconds]
   end
 
   def to_f
-    @degrees.to_f + (@minutes / 60.0) + (@seconds / 3600.0)
+    degrees.to_f + (minutes / 60.0) + (seconds / 3600.0)
   end
 
   def to_radians
@@ -51,12 +47,12 @@ class DMS
   # symbolically, using TeX notation
   def to_radians_tex
     unless (@seconds == 0.0) && (@minutes == 0)
-      return '$%0.*f$' % [@@precision, to_radians]
+      return '$%0.*f$' % [precision, to_radians]
     end
 
     # This gets deg to 0 <= x <= 360, even for negative
     # values of @degrees
-    deg = @degrees.divmod(360)[1]
+    deg = degrees.divmod(360)[1]
     case deg
     when 0
       '$0$'
@@ -85,20 +81,20 @@ class DMS
     when 360
       '$2\\pi$'
     else
-      '$%0.*f$' % [@@precision, to_radians]
+      '$%0.*f$' % [precision, to_radians]
     end
   end
 
   def to_tex
-    "$%02d^\\circ~%02d'~%02.*f''$" % [@degrees, @minutes, @@precision, @seconds] # "
+    "$%02d^\\circ~%02d'~%02.*f''$" % [degrees, minutes, precision, seconds] # "
   end
 
   def -@
-    DMS.new(-@degrees, @minutes, @seconds)
+    DMS.new(-degrees, minutes, seconds)
   end
 
   def +@
-    DMS.new(@degrees, @minutes, @seconds)
+    DMS.new(degrees, minutes, seconds)
   end
 
   def <=>(other)
@@ -106,23 +102,23 @@ class DMS
   end
 
   def +(other)
-    seconds = @seconds + other.seconds
-    minutes = @minutes + other.minutes
-    degrees = @degrees + other.degrees
+    seconds += other.seconds
+    minutes += other.minutes
+    degrees += other.degrees
     DMS.new(degrees, minutes, seconds)
   end
 
   def -(other)
-    r = (self + -other)
-    DMS.new(r.degrees, r.minutes, r.seconds)
+    diff = (self + -other)
+    DMS.new(diff.degrees, diff.minutes, diff.seconds)
   end
 
-  def *(other)
-    DMS.new(other * @degrees, other * @minutes, other * @seconds)
+  def *(multiplier)
+    DMS.new(multiplier * degrees, multiplier * minutes, multiplier * seconds)
   end
 
-  def /(other)
-    DMS.new(@degrees / other, @minutes / other, @seconds / other)
+  def /(divisor)
+    DMS.new(@degrees / divisor, @minutes / divisor, @seconds / divisor)
   end
 
   def sin
@@ -153,23 +149,23 @@ class DMS
   # After normalization, only degrees can be negative,
   # which will represent a negative quantity
   def normalize
-    q, r = @seconds.divmod(60.0)
-    @seconds = r
-    @minutes += q
-    q, r = @minutes.divmod(60)
-    @minutes = r
-    @degrees += q
+    q, r = seconds.divmod(60.0)
+    self.seconds = r
+    self.minutes += q
+    q, r = minutes.divmod(60)
+    self.minutes = r
+    self.degrees += q
   end
 end
 
 class Integer
   alias_method :times, :*
-  def *(other)
-    case other
+  def *(multiplier)
+    case multiplier
     when DMS
-      other * self
+      multiplier * self
     else
-      times(other)
+      times(multiplier)
     end
   end
 end

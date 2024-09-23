@@ -3,7 +3,7 @@ require 'spec_helper'
 module ErbTeX
   describe CommandLine do
     describe 'parsing' do
-      before :all do
+      before do
         # Without this fakery, $0 would be rspec when these specs are run.
         $0 = 'erbtex'
         # NOTE: ARGV does not include the name of the program as the first

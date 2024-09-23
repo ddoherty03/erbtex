@@ -10,7 +10,7 @@ module ErbTeX
     attr_reader :input_file, :print_version, :print_help
 
     def initialize(argv)
-      # Note: argv will be the command line arguments after processing by the
+      # NOTE: argv will be the command line arguments after processing by the
       # shell, so if we see things such as '&', '~', '\' in the args, these
       # were quoted by the user on the command-line and need no special
       # treatment here. For example, '~/junk' on the commandline will show up
@@ -26,7 +26,7 @@ module ErbTeX
 
       # Find the tex_commands
       @tex_commands = []
-      if argv.any? { |a| a =~ /\A\\/ }
+      if argv.any? { |a| a.start_with?('\\') }
         # All args after first starting with '\' should be interpreted as TeX
         # commands, even if they don't start with '\'
         @tex_commands = argv.drop_while { |a| a !~ /\A\\/ }
@@ -43,16 +43,16 @@ module ErbTeX
 
       # Look for our --version
       @print_version = false
-      if argv.any? { |a| a =~ /\A--version/ }
+      if argv.any? { |a| a.start_with?('--version') }
         @print_version = true
-        argv.reject! { |a| a =~ /\A--version/ }
+        argv.reject! { |a| a.start_with?('--version') }
       end
 
       # Look for our --help
       @print_help = false
-      if argv.any? { |a| a =~ /\A--help/ }
+      if argv.any? { |a| a.start_with?('--help') }
         @print_help = true
-        argv.reject! { |a| a =~ /\A--help/ }
+        argv.reject! { |a| a.start_with?('--help') }
       end
 
       # The last argument, assuming it does not start with a '-' or '&', is
@@ -70,9 +70,9 @@ module ErbTeX
 
     def tex_command(tex_file = input_file)
       "#{tex_program} " \
-      "#{tex_args.shelljoin} " \
-      "#{tex_commands.shelljoin} " \
-      "#{tex_file}"
+        "#{tex_args.shelljoin} " \
+        "#{tex_commands.shelljoin} " \
+        "#{tex_file}"
         .strip.squeeze(' ')
     end
   end

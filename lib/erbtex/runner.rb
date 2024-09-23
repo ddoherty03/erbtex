@@ -19,7 +19,7 @@ module ErbTeX
     puts "erbtex version: #{ErbTeX::VERSION}"
     puts "Ruby version: #{RUBY_VERSION}"
     begin
-      erubis_version = `erubis -v`
+      erubis_version = %x(erubis -v)
     rescue Errno::ENOENT
       warn 'Warning: erubis does not appear to be installed!'
       exit(1)
@@ -78,7 +78,7 @@ module ErbTeX
       exit $CHILD_STATUS.exitstatus
     end
     # Run a second time unless its latexmk
-    unless cmd =~ /\A *latexmk/
+    unless /\A *latexmk/.match?(cmd)
       warn "TEXINPUTS set to: #{new_env['TEXINPUTS']}"
       unless system(new_env, cmd)
         warn "Call to '#{cmd}' failed."

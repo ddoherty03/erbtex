@@ -4,7 +4,7 @@
 # for example, ydl.  This only happened on saturn for some reason that I don't
 # understand, but this kludge made it work.
 
-require 'bundler/setup' if $LOAD_PATH.none? { |p| p =~ /erbtex/ }
+require 'bundler/setup' if $LOAD_PATH.none? { |p| p.include?('erbtex') }
 
 require 'shellwords'
 require 'erubis'

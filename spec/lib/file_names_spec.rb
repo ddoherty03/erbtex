@@ -8,7 +8,7 @@ module ErbTeX
       end
     end
 
-    before :each do
+    before do
       FileUtils.rm_f Dir.glob('tmp/*')
     end
 

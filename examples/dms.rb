@@ -19,9 +19,9 @@ class DMS
   def self.from_radians(rad)
     if rad < 0
       rad = -rad
-      sign = -1
+      -1
     else
-      sign = 1
+      1
     end
     deg = rad * (360.0 / (2.0 * Math::PI))
     degrees = deg.floor
@@ -50,7 +50,7 @@ class DMS
   # If degrees are at well-known values, eppress as radians
   # symbolically, using TeX notation
   def to_radians_tex
-    unless @seconds == 0.0 and @minutes == 0
+    unless (@seconds == 0.0) && (@minutes == 0)
       return '$%0.*f$' % [@@precision, to_radians]
     end
 
@@ -90,7 +90,7 @@ class DMS
   end
 
   def to_tex
-    "$%02d^\\circ~%02d'~%02.*f''$" % [@degrees, @minutes, @@precision, @seconds] #"
+    "$%02d^\\circ~%02d'~%02.*f''$" % [@degrees, @minutes, @@precision, @seconds] # "
   end
 
   def -@
@@ -113,16 +113,16 @@ class DMS
   end
 
   def -(other)
-    r = (self + (-other))
+    r = (self + -other)
     DMS.new(r.degrees, r.minutes, r.seconds)
   end
 
-  def *(scalar)
-    DMS.new(scalar*@degrees, scalar*@minutes, scalar*@seconds)
+  def *(other)
+    DMS.new(other * @degrees, other * @minutes, other * @seconds)
   end
 
-  def /(scalar)
-    DMS.new(@degrees / scalar, @minutes / scalar, @seconds / scalar)
+  def /(other)
+    DMS.new(@degrees / other, @minutes / other, @seconds / other)
   end
 
   def sin
@@ -163,7 +163,7 @@ class DMS
 end
 
 class Integer
-  alias times *
+  alias_method :times, :*
   def *(other)
     case other
     when DMS
@@ -174,7 +174,7 @@ class Integer
   end
 end
 
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
   print "Fifty seconds in radians: #{DMS.new(0, 0, 50).to_radians}\n"
   print "One minute in radians: #{DMS.new(0, 1, 0).to_radians}\n"
   print "Fifty seconds in degrees: #{DMS.new(0, 0, 50).to_f}\n"

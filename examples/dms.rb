@@ -113,12 +113,12 @@ class DMS
     DMS.new(diff.degrees, diff.minutes, diff.seconds)
   end
 
-  def *(multiplier)
-    DMS.new(multiplier * degrees, multiplier * minutes, multiplier * seconds)
+  def *(other)
+    DMS.new(other * degrees, other * minutes, other * seconds)
   end
 
-  def /(divisor)
-    DMS.new(@degrees / divisor, @minutes / divisor, @seconds / divisor)
+  def /(other)
+    DMS.new(@degrees / other, @minutes / other, @seconds / other)
   end
 
   def sin
@@ -160,12 +160,12 @@ end
 
 class Integer
   alias_method :times, :*
-  def *(multiplier)
-    case multiplier
+  def *(other)
+    case other
     when DMS
-      multiplier * self
+      other * self
     else
-      times(multiplier)
+      times(other)
     end
   end
 end

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
 
-# rubocop:disable Style/GlobalVars
+# rubocop:disable-next Style/GlobalVars
 $x = 1957
-# rubocop:enable Style/GlobalVars

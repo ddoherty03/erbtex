@@ -9,8 +9,14 @@ module ErbTeX
   # Perform the erubis pre-processing and the TeX processing on the input
   # file.
   def self.run(cmd_line)
-    report_version && exit(0) if cmd_line.print_version
-    report_help && exit(0) if cmd_line.print_help
+    if cmd_line.print_version
+      report_version
+      exit(0)
+    end
+    if cmd_line.print_help
+      report_help
+      exit(0)
+    end
 
     in_dir = parse_file_name(cmd_line.input_file)[:dir]
     tex_file = erb_to_tex(cmd_line.input_file, in_dir) if cmd_line.input_file
@@ -21,13 +27,12 @@ module ErbTeX
     puts "erbtex version: #{ErbTeX::VERSION}"
     puts "Ruby version: #{RUBY_VERSION}"
     begin
-      erubis_version = `erubis -v`
+      erubis_version = %x(erubis -v)
     rescue Errno::ENOENT
       warn 'Warning: erubis does not appear to be installed!'
       exit(1)
     end
     puts "erubis version: #{erubis_version}"
-    true
   end
 
   # Display the help for erbtex.
@@ -51,7 +56,6 @@ module ErbTeX
       as an argument to the tex-prog.
 
     HELP
-    true
   end
 
   # Run the TeX program on the erubis-processed output file, which is the
@@ -67,8 +71,8 @@ module ErbTeX
       in_dir = File.absolute_path(File.expand_path(in_dir))
       ENV['TEXINPUTS'] ||= ''
       unless ENV['TEXINPUTS'].split(File::PATH_SEPARATOR)
-                             .reject { |p| p.strip.empty? }
-                             .any? { |p| in_dir == File.absolute_path(File.expand_path(p)) }
+               .reject { |p| p.strip.empty? }
+               .any? { |p| in_dir == File.absolute_path(File.expand_path(p)) }
         new_env['TEXINPUTS'] = ".:#{in_dir}:#{ENV['TEXINPUTS']}"
       end
     end
@@ -101,7 +105,7 @@ module ErbTeX
     if File.exist?(in_dir)
       in_dir = File.absolute_path(File.expand_path(in_dir))
       unless $LOAD_PATH
-             .any? { |p| in_dir == File.absolute_path(File.expand_path(p)) }
+               .any? { |p| in_dir == File.absolute_path(File.expand_path(p)) }
         $LOAD_PATH.unshift(in_dir)
       end
     end

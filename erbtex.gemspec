@@ -14,9 +14,9 @@ Gem::Specification.new do |gem|
                      process ruby fragments between {: and :} markers,
                      greatly expanding the ability to generate
                      automated TeX and LaTeX documents.'
-  gem.files = `git ls-files`.split("\n")
+  gem.files = %x(git ls-files).split("\n")
   gem.files.delete_if { |f| f =~ /\.(log|etc|aux|etx|pdf|gem|tmp)$/ }
-  gem.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
+  gem.executables   = %x(git ls-files -- bin/*).split("\n").map { |f| File.basename(f) }
   gem.require_paths = ['lib']
 
   gem.add_dependency 'erubis'

@@ -9,3 +9,4 @@ auto
 *.fdb_latexmk
 *.fls
 *.erb
+*.etx

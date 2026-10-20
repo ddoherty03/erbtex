@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require 'gem_docs'
+
+GemDocs.install
+
 require 'bundler/gem_tasks'
 
 # Installing into the user's gems must not inherit this project's bundle.

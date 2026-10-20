@@ -1,5 +1,12 @@
-* ErbTeX: Ruby pre-processing for TeX and LaTeX Documents
+#+PROPERTY: header-args:ruby :results value :colnames no :hlines yes :exports both :dir "./"
+#+PROPERTY: header-args:ruby+ :wrap example :session erbtex_session :eval yes
+#+PROPERTY: header-args:ruby+ :prologue "$:.unshift('./lib') unless $:.first == './lib'; require 'erbtex'"
+#+PROPERTY: header-args:ruby+ :ruby "bundle exec irb"
+#+PROPERTY: header-args:sh :exports code :eval no
+#+PROPERTY: header-args:bash :exports code :eval no
+#+PROPERTY: header-args:latex :exports code :eval no
 
+* ErbTeX: Ruby pre-processing for TeX and LaTeX Documents
 ** Description
 
 ~erbtex~ is a ruby gem that provides the ~erbtex~ command line program that

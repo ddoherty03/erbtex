@@ -12,32 +12,47 @@ GIT
 PATH
   remote: .
   specs:
-    erbtex (0.4.7)
+    erbtex (0.5.0)
       erubis
       fat_core
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.0)
-      concurrent-ruby (~> 1.0, >= 1.0.2)
+    activesupport (8.1.4)
+      base64
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.3.1)
+      connection_pool (>= 2.2.5)
+      drb
       i18n (>= 1.6, < 2)
+      json
+      logger (>= 1.4.2)
       minitest (>= 5.1)
-      tzinfo (~> 2.0)
+      securerandom (>= 0.3)
+      tzinfo (~> 2.0, >= 2.0.5)
+      uri (>= 0.13.1)
     ast (2.4.3)
+    base64 (0.3.0)
+    bigdecimal (4.1.3)
     byebug (11.1.3)
     coderay (1.1.3)
-    concurrent-ruby (1.1.9)
+    concurrent-ruby (1.3.8)
+    connection_pool (3.0.2)
     damerau-levenshtein (1.3.3)
     debug (1.9.2)
       irb (~> 1.10)
       reline (>= 0.3.8)
     diff-lcs (1.4.4)
+    drb (2.2.3)
     erubis (2.7.0)
-    fat_core (4.9.2)
+    fat_core (5.4.0)
       activesupport
       damerau-levenshtein
-    i18n (1.8.11)
+    gem_docs (0.3.1)
+      rake
+      yard
+    i18n (1.15.2)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
     irb (1.14.0)
@@ -46,6 +61,7 @@ GEM
     json (3.1.0)
     language_server-protocol (3.17.0.6)
     lint_roller (1.1.0)
+    logger (1.7.0)
     method_source (1.0.0)
     minitest (5.14.3)
     parallel (2.3.0)
@@ -113,12 +129,14 @@ GEM
     rubocop-shopify (2.18.0)
       rubocop (~> 1.62)
     ruby-progressbar (1.13.0)
+    securerandom (0.4.1)
     stringio (3.1.1)
-    tzinfo (2.0.4)
+    tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.3.0)
       unicode-emoji (~> 4.3)
     unicode-emoji (4.3.0)
+    uri (1.1.2)
     yard (0.9.26)
 
 PLATFORMS
@@ -128,6 +146,7 @@ DEPENDENCIES
   bundler
   debug
   erbtex!
+  gem_docs (~> 0.3.1)
   minitest
   pry
   pry-byebug

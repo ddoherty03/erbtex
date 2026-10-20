@@ -94,6 +94,15 @@ describe ErbTeX do
       expect(File.readlines('calls.jsonl').size).to eq(1)
     end
 
+    it 'invokes an executable by its complete path with spaces and hyphens' do
+      File.rename('faketex', 'fake tex-engine')
+      executable = File.join(Dir.pwd, 'fake tex-engine')
+      _, stderr, status = invoke_tex("--invoke=#{executable}", 'file.tex.erb')
+
+      expect(status.exitstatus).to eq(0), stderr
+      expect(File.readlines('calls.jsonl').map { |line| JSON.parse(line) }).to eq([['file.tex'], ['file.tex']])
+    end
+
     it 'runs latexmk only once' do
       File.rename('faketex', 'latexmk')
       _, stderr, status = invoke_tex('--invoke=latexmk', 'file.tex.erb')

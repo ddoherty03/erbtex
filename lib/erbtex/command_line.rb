@@ -24,26 +24,18 @@ module ErbTeX
         argv = argv.take(first_tex_command_k)
       end
 
-      # Look for our --invoke=tex_command option
-      @tex_program = 'pdflatex'
-      if argv.any? { |a| a =~ /\A--invoke=(\w+)/ }
-        @tex_program = ::Regexp.last_match(1)
-        argv.reject! { |a| a =~ /\A--invoke=(\w+)/ }
+      # Keep the complete executable name, including paths and punctuation.
+      invoke_options = argv.select { |argument| argument.start_with?('--invoke=') }
+      if invoke_options.include?('--invoke=')
+        raise ArgumentError, '--invoke requires a nonempty executable name'
       end
 
-      # Look for our --version
-      @print_version = false
-      if argv.any? { |a| a.start_with?('--version') }
-        @print_version = true
-        argv.reject! { |a| a.start_with?('--version') }
-      end
+      @tex_program = invoke_options.first&.delete_prefix('--invoke=') || 'pdflatex'
+      argv = argv.reject { |argument| argument.start_with?('--invoke=') }
 
-      # Look for our --help
-      @print_help = false
-      if argv.any? { |a| a.start_with?('--help') }
-        @print_help = true
-        argv.reject! { |a| a.start_with?('--help') }
-      end
+      @print_version = argv.include?('--version')
+      @print_help = argv.include?('--help')
+      argv = argv.reject { |argument| argument == '--version' || argument == '--help' }
 
       # The last argument, assuming it does not start with a '-' or '&', is
       # assumed to be the name of the input_file.

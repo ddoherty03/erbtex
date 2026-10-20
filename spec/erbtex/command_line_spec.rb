@@ -5,6 +5,13 @@ require 'spec_helper'
 module ErbTeX
   describe CommandLine do
     describe 'erbtex options' do
+      it 'recognizes no-clobber and removes it from TeX arguments' do
+        cl = described_class.new(['--no-clobber', 'file.tex'])
+
+        expect(cl.no_clobber).to be(true)
+        expect(cl.tex_command).to eq(['pdflatex', 'file.tex'])
+      end
+
       it 'recognizes preprocess-only and removes it from TeX arguments' do
         cl = described_class.new(['--preprocess-only', 'file.tex'])
 
@@ -50,23 +57,26 @@ module ErbTeX
           '--version-extra',
           '--version=extra',
           '--invoker=tex',
-          '--preprocess-only=extra'
+          '--preprocess-only=extra',
+          '--no-clobber=extra'
         ]
         cl = described_class.new([*options, 'file.tex'])
 
         expect(cl.print_help).to be(false)
         expect(cl.print_version).to be(false)
         expect(cl.preprocess_only).to be(false)
+        expect(cl.no_clobber).to be(false)
         expect(cl.tex_command).to eq(['pdflatex', *options, 'file.tex'])
       end
 
       it 'preserves option-like text after the first TeX command' do
-        commands = ['\\relax', '--help', '--version', '--preprocess-only', '--invoke=other', '\\end']
+        commands = ['\\relax', '--help', '--version', '--preprocess-only', '--no-clobber', '--invoke=other', '\\end']
         cl = described_class.new(['--invoke=pdf-latex', *commands])
 
         expect(cl.print_help).to be(false)
         expect(cl.print_version).to be(false)
         expect(cl.preprocess_only).to be(false)
+        expect(cl.no_clobber).to be(false)
         expect(cl.tex_command).to eq(['pdf-latex', *commands])
       end
     end

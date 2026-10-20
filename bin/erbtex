@@ -15,6 +15,9 @@ module ErbTeX
   begin
     cl = CommandLine.new(ARGV)
     status = ErbTeX.run(cl)
+  rescue OutputExists => e
+    warn "Warning: #{e}"
+    status = 1
   rescue SystemCallError, ArgumentError, NoInputFile => e
     warn "Error: #{e}"
     status = 1

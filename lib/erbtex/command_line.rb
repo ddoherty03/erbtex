@@ -7,7 +7,7 @@ module ErbTeX
   # Class to record and manipulate the command line typed by the user.
   class CommandLine
     attr_reader :erbtex_name, :tex_program, :tex_args, :tex_commands, :input_file, :print_version, :print_help
-    attr_reader :preprocess_only
+    attr_reader :preprocess_only, :no_clobber
 
     def initialize(argv)
       # Arguments have already been split by the shell. Preserve each string
@@ -37,8 +37,10 @@ module ErbTeX
       @print_version = argv.include?('--version')
       @print_help = argv.include?('--help')
       @preprocess_only = argv.include?('--preprocess-only')
+      @no_clobber = argv.include?('--no-clobber')
       argv = argv.reject { |argument| argument == '--version' || argument == '--help' }
       argv = argv.reject { |argument| argument == '--preprocess-only' }
+      argv = argv.reject { |argument| argument == '--no-clobber' }
 
       # The last argument, assuming it does not start with a '-' or '&', is
       # assumed to be the name of the input_file.

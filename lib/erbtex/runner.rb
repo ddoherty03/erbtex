@@ -121,10 +121,13 @@ module ErbTeX
     pat = ENV['ERBTEX_PATTERN'] || '{: :}'
 
     out_file = ErbTeX.out_file_name(in_file)
+    rendered = ::Erubis::Eruby.new(in_contents, pattern: pat).result
     warn "  Erubis writing to #{out_file}..."
-    File.open(out_file, 'w') do |f|
-      er = ::Erubis::Eruby.new(in_contents, pattern: pat)
-      f.write(er.result)
+    # Keep the temporary file beside its destination so rename is atomic.
+    Tempfile.create([".#{File.basename(out_file)}-", '.tmp'], File.dirname(out_file)) do |f|
+      f.write(rendered)
+      f.close
+      File.rename(f.path, out_file)
     end
     warn 'done'
     warn '================================================================'

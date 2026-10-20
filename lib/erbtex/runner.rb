@@ -18,8 +18,15 @@ module ErbTeX
       exit(0)
     end
 
+    if cmd_line.preprocess_only && !cmd_line.input_file
+      warn 'Error: --preprocess-only requires an input file'
+      exit(1)
+    end
+
     in_dir = parse_file_name(cmd_line.input_file)[:dir] if cmd_line.input_file
     tex_file = erb_to_tex(cmd_line.input_file, in_dir) if cmd_line.input_file
+    return 0 if cmd_line.preprocess_only
+
     run_tex(cmd_line.tex_command(tex_file), in_dir)
   end
 
@@ -43,6 +50,8 @@ module ErbTeX
       erbtex_options are:
         --version           - print the version of the erbtex gem, ruby and erubis
         --help              - print this help message
+        --preprocess-only   - generate the preprocessed file without invoking TeX
+                              (requires an input file)
         --invoke=<tex_prog> - after pre-processing, invoke <tex_prog> on the
                               resulting file, tex_prog is pdflatex by default
 

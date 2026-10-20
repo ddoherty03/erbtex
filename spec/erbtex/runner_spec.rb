@@ -114,6 +114,41 @@ describe ErbTeX do
       expect(File.readlines('calls.jsonl').size).to eq(1)
     end
 
+    it 'preprocesses without invoking TeX when preprocess-only is supplied' do
+      _, stderr, status = invoke_tex('--preprocess-only', '--invoke=faketex', 'file.tex.erb')
+
+      expect(status.exitstatus).to eq(0), stderr
+      expect(File.read('file.tex')).to eq('answer: 42')
+      expect(File.exist?('calls.jsonl')).to be(false)
+    end
+
+    it 'writes an etx file for tex input in preprocess-only mode' do
+      File.rename('file.tex.erb', 'file.tex')
+      _, stderr, status = invoke_tex('--preprocess-only', '--invoke=faketex', 'file.tex')
+
+      expect(status.exitstatus).to eq(0), stderr
+      expect(File.read('file.etx')).to eq('answer: 42')
+      expect(File.exist?('calls.jsonl')).to be(false)
+    end
+
+    it 'fails without invoking TeX when preprocess-only has no input file' do
+      _, stderr, status = invoke_tex('--preprocess-only', '--invoke=faketex')
+
+      expect(status.exitstatus).to eq(1)
+      expect(stderr).to include('--preprocess-only requires an input file')
+      expect(File.exist?('calls.jsonl')).to be(false)
+    end
+
+    it 'reports template failures in preprocess-only mode without invoking TeX' do
+      File.write('file.tex.erb', '{: ) :}')
+      _, stderr, status = invoke_tex('--preprocess-only', '--invoke=faketex', 'file.tex.erb')
+
+      expect(status.exitstatus).to eq(1)
+      expect(stderr).to include('Erubis pre-processing failed:', 'file.tex.erb:1')
+      expect(File.exist?('calls.jsonl')).to be(false)
+      expect(File.exist?('file.tex')).to be(false)
+    end
+
     it 'invokes an executable by its complete path with spaces and hyphens' do
       File.rename('faketex', 'fake tex-engine')
       executable = File.join(Dir.pwd, 'fake tex-engine')
@@ -155,7 +190,7 @@ describe ErbTeX do
     stdout, stderr, status = run_erbtex('--help')
 
     expect(status.exitstatus).to eq(0), stderr
-    expect(stdout).to include('Usage: erbtex')
+    expect(stdout).to include('Usage: erbtex', '--preprocess-only', 'without invoking TeX')
     expect(stderr).to eq('')
   end
 

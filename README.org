@@ -47,6 +47,11 @@ capabilities of a normal TeX or LaTeX.
 
 You can get the version with the --version flag and help with --help.
 
+To generate the preprocessed file without invoking TeX, use
+~erbtex --preprocess-only roots.tex~. This writes ~roots.etx~ and exits;
+an input named ~roots.tex.erb~ produces ~roots.tex~ instead. The option
+requires an input file.
+
 ** Examples
 
 *** Square Roots

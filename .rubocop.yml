@@ -32,3 +32,10 @@ RSpec/MultipleMemoizedHelpers:
 Style/RaiseArgs:
   AllowedCompactTypes:
     - InventoryError
+
+RSpec/SpecFilePathFormat:
+  CustomTransform:
+    ErbTeX: erbtex
+
+RSpec/SpecFilePathFormat:
+  Enabled: false

@@ -7,8 +7,4 @@ gemspec
 gem 'debug'
 gem 'rake', '~> 13.0'
 gem 'rspec', '~> 3.0'
-gem 'rubocop', '~> 1.21'
-gem 'rubocop-performance'
-gem 'rubocop-rake'
-gem 'rubocop-rspec'
-gem 'rubocop-shopify'
+gem 'rubocop-ddoherty', git: 'https://github.com/ddoherty03/rubocop-ddoherty.git', branch: 'master', require: false

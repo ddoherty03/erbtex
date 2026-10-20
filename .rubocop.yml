@@ -1,0 +1,34 @@
+inherit_gem:
+  rubocop-ddoherty: 'config/default.yml'
+
+AllCops:
+  TargetRubyVersion: 3.3
+  Include:
+    - 'lib/**/*'
+    - 'bin/**/*'
+    - 'spec/**/*'
+    - 'features/**/*'
+  Exclude:
+    - 'spec/tmp/**/*'
+    - 'lib/byr/reports/**/*'
+    - 'home/**/*'
+    - 'db/**/*'
+    - 'scripts/**/*'
+    - '**/*.erb'
+    - '**/*.tex'
+    - 'app/**/*'
+    - '**/*.txt'
+    - '**/*.org'
+    - '**/*~'
+    - '.simplecov'
+    - 'spec/files_fmv/**/*'
+    - 'spec/files_compl/**/*'
+    - 'spec/files_ofx/**/*'
+    - 'features/**/*'
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 13
+
+Style/RaiseArgs:
+  AllowedCompactTypes:
+    - InventoryError

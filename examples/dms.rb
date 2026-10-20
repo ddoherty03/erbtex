@@ -1,12 +1,12 @@
 #! /usr/bin/ruby
+# frozen_string_literal: true
 
 # A class for maipulating angles expressed as degreed, minutes,
 # and seconds.
 class DMS
   include Comparable
 
-  attr_accessor :degrees, :minutes, :seconds
-  attr_accessor :precision
+  attr_accessor :degrees, :minutes, :seconds, :precision
 
   def initialize(deg, min = 0, sec = 0.0, precision: 4)
     @degrees = deg.to_i
@@ -17,7 +17,7 @@ class DMS
   end
 
   def self.from_radians(rad)
-    if rad < 0
+    if rad.negative?
       rad = -rad
       -1
     else
@@ -32,7 +32,7 @@ class DMS
   end
 
   def to_s
-    "#{degrees}* #{minutes}' %0.*f''" % [precision, seconds]
+    format("#{degrees}* #{minutes}' %0.*f''", precision, seconds)
   end
 
   def to_f
@@ -46,9 +46,7 @@ class DMS
   # If degrees are at well-known values, eppress as radians
   # symbolically, using TeX notation
   def to_radians_tex
-    unless (@seconds == 0.0) && (@minutes == 0)
-      return '$%0.*f$' % [precision, to_radians]
-    end
+    return format('$%0.*f$', precision, to_radians) unless (@seconds == 0.0) && @minutes.zero?
 
     # This gets deg to 0 <= x <= 360, even for negative
     # values of @degrees
@@ -81,12 +79,12 @@ class DMS
     when 360
       '$2\\pi$'
     else
-      '$%0.*f$' % [precision, to_radians]
+      format('$%0.*f$', precision, to_radians)
     end
   end
 
   def to_tex
-    "$%02d^\\circ~%02d'~%02.*f''$" % [degrees, minutes, precision, seconds] # "
+    format("$%02d^\\circ~%02d'~%02.*f''$", degrees, minutes, precision, seconds) # "
   end
 
   def -@
@@ -159,7 +157,7 @@ class DMS
 end
 
 class Integer
-  alias_method :times, :*
+  alias times *
   def *(other)
     case other
     when DMS

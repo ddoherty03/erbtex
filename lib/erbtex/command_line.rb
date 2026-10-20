@@ -1,4 +1,4 @@
-# coding: utf-8
+# frozen_string_literal: true
 
 # Name space for erbtex command.
 module ErbTeX
@@ -6,8 +6,7 @@ module ErbTeX
 
   # Class to record and manipulate the command line typed by the user.
   class CommandLine
-    attr_reader :erbtex_name, :tex_program, :tex_args, :tex_commands
-    attr_reader :input_file, :print_version, :print_help
+    attr_reader :erbtex_name, :tex_program, :tex_args, :tex_commands, :input_file, :print_version, :print_help
 
     def initialize(argv)
       # NOTE: argv will be the command line arguments after processing by the
@@ -37,7 +36,7 @@ module ErbTeX
       # Look for our --invoke=tex_command option
       @tex_program = 'pdflatex'
       if argv.any? { |a| a =~ /\A--invoke=(\w+)/ }
-        @tex_program = $1
+        @tex_program = ::Regexp.last_match(1)
         argv.reject! { |a| a =~ /\A--invoke=(\w+)/ }
       end
 
@@ -58,9 +57,7 @@ module ErbTeX
       # The last argument, assuming it does not start with a '-' or '&', is
       # assumed to be the name of the input_file.
       @input_file = nil
-      if !argv.empty? && argv[-1] !~ /\A[-&]/
-        @input_file = ErbTeX.expand_input_file(argv.pop)
-      end
+      @input_file = ErbTeX.expand_input_file(argv.pop) if !argv.empty? && argv[-1] !~ /\A[-&]/
 
       # What remains in argv should be the tex program's '-options', which
       # should be passed through untouched. So, can form the full command line

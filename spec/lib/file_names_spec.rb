@@ -1,11 +1,11 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module ErbTeX
   describe 'expand input file' do
     before do
-      unless Dir.exist?('tmp')
-        FileUtils.mkdir_p('tmp')
-      end
+      FileUtils.mkdir_p('tmp') unless Dir.exist?('tmp')
       FileUtils.rm_f Dir.glob('tmp/*')
     end
 

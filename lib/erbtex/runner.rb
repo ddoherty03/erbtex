@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'tempfile'
 require 'pathname'
 require 'English'
@@ -19,7 +21,7 @@ module ErbTeX
     puts "erbtex version: #{ErbTeX::VERSION}"
     puts "Ruby version: #{RUBY_VERSION}"
     begin
-      erubis_version = %x(erubis -v)
+      erubis_version = `erubis -v`
     rescue Errno::ENOENT
       warn 'Warning: erubis does not appear to be installed!'
       exit(1)
@@ -65,8 +67,8 @@ module ErbTeX
       in_dir = File.absolute_path(File.expand_path(in_dir))
       ENV['TEXINPUTS'] ||= ''
       unless ENV['TEXINPUTS'].split(File::PATH_SEPARATOR)
-               .reject { |p| p.strip.empty? }
-               .any? { |p| in_dir == File.absolute_path(File.expand_path(p)) }
+                             .reject { |p| p.strip.empty? }
+                             .any? { |p| in_dir == File.absolute_path(File.expand_path(p)) }
         new_env['TEXINPUTS'] = ".:#{in_dir}:#{ENV['TEXINPUTS']}"
       end
     end
@@ -99,7 +101,7 @@ module ErbTeX
     if File.exist?(in_dir)
       in_dir = File.absolute_path(File.expand_path(in_dir))
       unless $LOAD_PATH
-               .any? { |p| in_dir == File.absolute_path(File.expand_path(p)) }
+             .any? { |p| in_dir == File.absolute_path(File.expand_path(p)) }
         $LOAD_PATH.unshift(in_dir)
       end
     end

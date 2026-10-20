@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Name space module for ErbTeX.
 module ErbTeX
   # Given an arbitrary file name, parse it into its components in one go.  It
@@ -6,7 +8,7 @@ module ErbTeX
   # name rather than an extension, and (3) any extension, including a compound
   # extension such as .tex.erb
   def self.parse_file_name(path)
-    fn_re = %r{\A(?<dir>([^\/]*\/)*)  (?<base>.?[^\/.]*)  (?<ext>\.[\w.]+)?}x
+    fn_re = %r{\A(?<dir>([^/]*/)*)  (?<base>.?[^/.]*)  (?<ext>\.[\w.]+)?}x
     md = fn_re.match(path)
     { dir: md[:dir], base: md[:base], ext: md[:ext] }
   end

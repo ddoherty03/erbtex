@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Conditional added to prevent running bundler/setup twice when it already has
 # erbtex in the LOAD_PATH.  Failure to do this was causing bundler to setup for
 # the wrong Gemfile if it was run in the development directory of another gem,

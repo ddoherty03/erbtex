@@ -1,5 +1,8 @@
-#! /usr/bin/ruby
+#! /usr/bin/env ruby
+#
 # frozen_string_literal: true
+
+require_relative "int_ext"
 
 # A class for maipulating angles expressed as degreed, minutes,
 # and seconds.
@@ -153,18 +156,6 @@ class DMS
     q, r = minutes.divmod(60)
     self.minutes = r
     self.degrees += q
-  end
-end
-
-class Integer
-  alias times *
-  def *(other)
-    case other
-    when DMS
-      other * self
-    else
-      times(other)
-    end
   end
 end
 

@@ -1,10 +1,14 @@
 #! /usr/bin/env ruby
+#
+# frozen_string_literal: true
 
 require 'erbtex'
 
+# Name space module for erbtex's ruby pre-processing of TeX and LaTeX files by
+# ruby.
 module ErbTeX
   if ARGV.empty?
-    wanr "usage: erbtex [LaTex_filename]"
+    warn 'usage: erbtex [LaTex_filename]'
     exit(1)
   end
 

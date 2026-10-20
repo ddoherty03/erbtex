@@ -18,7 +18,7 @@ module ErbTeX
       exit(0)
     end
 
-    in_dir = parse_file_name(cmd_line.input_file)[:dir]
+    in_dir = parse_file_name(cmd_line.input_file)[:dir] if cmd_line.input_file
     tex_file = erb_to_tex(cmd_line.input_file, in_dir) if cmd_line.input_file
     run_tex(cmd_line.tex_command(tex_file), in_dir)
   end
@@ -79,16 +79,16 @@ module ErbTeX
     # Call cmd with the environment augmented by possibly expanded TEXINPUTS
     # environment variable.
     warn "TEXINPUTS set to: #{new_env['TEXINPUTS']}"
-    unless system(new_env, cmd)
-      warn "Call to '#{cmd}' failed."
-      exit $CHILD_STATUS.exitstatus
+    unless system(new_env, [cmd.first, cmd.first], *cmd.drop(1))
+      warn "Call to '#{cmd.shelljoin}' failed."
+      exit($CHILD_STATUS.exitstatus || 128 + $CHILD_STATUS.termsig)
     end
     # Run a second time unless its latexmk
-    unless /\A *latexmk/.match?(cmd)
+    unless File.basename(cmd.first) == 'latexmk'
       warn "TEXINPUTS set to: #{new_env['TEXINPUTS']}"
-      unless system(new_env, cmd)
-        warn "Call to '#{cmd}' failed."
-        exit $CHILD_STATUS.exitstatus
+      unless system(new_env, [cmd.first, cmd.first], *cmd.drop(1))
+        warn "Call to '#{cmd.shelljoin}' failed."
+        exit($CHILD_STATUS.exitstatus || 128 + $CHILD_STATUS.termsig)
       end
     end
     $CHILD_STATUS.exitstatus

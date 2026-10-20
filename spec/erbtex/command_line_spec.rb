@@ -234,7 +234,7 @@ module ErbTeX
         expect(cl.erbtex_name).to eq('erbtex')
         expect(cl.tex_program).to eq('pdflatex')
         expect(cl.input_file).to eq('file_name.tex.erb')
-        expect(cl.tex_command).to eq(<<~'EOS'.tr("\n", ' ').strip)
+        expect(cl.tex_command).to eq(Shellwords.split(<<~'EOS'))
           pdflatex -draftmode -enc -etex -file-line-error -fmt junk -halt-on-error
           -ini -interaction batchmode -ipc -ipc-start -jobname junk -kpathsea-debug 8
           -mktex tex -mltex -nomktex tfm
@@ -250,7 +250,7 @@ module ErbTeX
         expect(cl.erbtex_name).to eq('erbtex')
         expect(cl.tex_program).to eq('pdflatex')
         expect(cl.input_file).to eq('example_files/file_name.tex.erb')
-        expect(cl.tex_command).to eq(<<~'EOS'.tr("\n", ' ').strip)
+        expect(cl.tex_command).to eq(Shellwords.split(<<~'EOS'))
           pdflatex -draftmode -enc -etex -file-line-error -fmt junk -halt-on-error
           -ini -interaction batchmode -ipc -ipc-start -jobname junk -kpathsea-debug 8
           -mktex tex -mltex -nomktex tfm
@@ -266,7 +266,7 @@ module ErbTeX
         expect(cl.erbtex_name).to eq('erbtex')
         expect(cl.tex_program).to eq('lualatex')
         expect(cl.input_file).to eq('file_name.tex.erb')
-        expect(cl.tex_command).to eq(<<~'EOS'.tr("\n", ' ').strip)
+        expect(cl.tex_command).to eq(Shellwords.split(<<~'EOS'))
           lualatex -draftmode -enc -etex -file-line-error -fmt junk -halt-on-error
           -ini -interaction batchmode -ipc -ipc-start -jobname junk -kpathsea-debug 8
           -mktex tex -mltex -nomktex tfm
@@ -282,7 +282,7 @@ module ErbTeX
         expect(cl.erbtex_name).to eq('erbtex')
         expect(cl.tex_program).to eq('pdflatex')
         expect(cl.input_file).to be_nil
-        expect(cl.tex_command).to eq(<<~'EOS'.tr("\n", ' ').strip)
+        expect(cl.tex_command).to eq(Shellwords.split(<<~'EOS'))
           pdflatex -draftmode -enc -etex -file-line-error -fmt junk -halt-on-error
           -ini -interaction batchmode -ipc -ipc-start -jobname junk -kpathsea-debug 8
           -mktex tex -mltex -nomktex tfm
@@ -299,7 +299,7 @@ module ErbTeX
         expect(cl.erbtex_name).to eq('erbtex')
         expect(cl.tex_program).to eq('pdflatex')
         expect(cl.input_file).to eq('file_name')
-        expect(cl.tex_command).to eq(<<~'EOS'.tr("\n", ' ').strip)
+        expect(cl.tex_command).to eq(Shellwords.split(<<~'EOS'))
           pdflatex -draftmode -enc -etex -file-line-error -fmt junk -halt-on-error
           -ini -interaction batchmode -ipc -ipc-start -jobname junk -kpathsea-debug 8
           -mktex tex -mltex -nomktex tfm
@@ -307,8 +307,8 @@ module ErbTeX
           -output-directory \~/texmf/tex -parse-first-line -progname pdflatex
           -recorder -shell-escape -src-specials cr,display,hbox,math,par
           -translate-file willy -version \&myformat
-          \\input\{junk.tex\} \\print these \\items \\end not_a_file
           file_name
+          \\input\{junk.tex\} \\print these \\items \\end not_a_file
         EOS
       end
     end

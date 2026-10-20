@@ -4,6 +4,7 @@ require 'spec_helper'
 require 'open3'
 require 'rbconfig'
 require 'tmpdir'
+require 'json'
 
 describe ErbTeX do
   describe '.erb_to_tex' do
@@ -48,13 +49,76 @@ describe ErbTeX do
     end
   end
 
-  def run_erbtex(flag)
+  describe 'TeX invocation' do
+    around do |example|
+      Dir.mktmpdir('erbtex-invocation') do |directory|
+        Dir.chdir(directory) { example.run }
+      end
+    end
+
+    before do
+      script = <<~RUBY
+        #!#{RbConfig.ruby}
+        require 'json'
+        File.open('calls.jsonl', 'a') { |file| file.puts(JSON.generate(ARGV)) }
+        exit(Integer(ENV.fetch('FAKE_TEX_STATUS', '0')))
+      RUBY
+      File.write('faketex', script)
+      File.chmod(0o755, 'faketex')
+      File.write('file.tex.erb', 'answer: {:= 6 * 7 :}')
+    end
+
+    def invoke_tex(*arguments, status: '0')
+      run_erbtex(
+        *arguments,
+        env: { 'PATH' => "#{Dir.pwd}:#{ENV.fetch('PATH')}", 'FAKE_TEX_STATUS' => status },
+      )
+    end
+
+    it 'preserves spaces, empty arguments, shell characters, and filenames across both passes' do
+      filename = 'my  file; echo INJECTED.tex.erb'
+      File.rename('file.tex.erb', filename)
+      arguments = ['-jobname=a  b', '', 'literal $HOME & `echo bad`', filename]
+      stdout, stderr, status = invoke_tex('--invoke=faketex', *arguments)
+
+      expect(status.exitstatus).to eq(0), stderr
+      expect(stdout).to eq('')
+      expected = [*arguments[0...-1], 'my  file; echo INJECTED.tex']
+      expect(File.readlines('calls.jsonl').map { |line| JSON.parse(line) }).to eq([expected, expected])
+    end
+
+    it 'propagates a failed TeX exit status and skips the second pass' do
+      _, stderr, status = invoke_tex('--invoke=faketex', 'file.tex.erb', status: '7')
+
+      expect(status.exitstatus).to eq(7), stderr
+      expect(File.readlines('calls.jsonl').size).to eq(1)
+    end
+
+    it 'runs latexmk only once' do
+      File.rename('faketex', 'latexmk')
+      _, stderr, status = invoke_tex('--invoke=latexmk', 'file.tex.erb')
+
+      expect(status.exitstatus).to eq(0), stderr
+      expect(File.readlines('calls.jsonl').size).to eq(1)
+    end
+
+    it 'passes TeX commands without requiring an input file' do
+      commands = ['\\relax', 'a  b', '\\end']
+      _, stderr, status = invoke_tex('--invoke=faketex', *commands)
+
+      expect(status.exitstatus).to eq(0), stderr
+      expect(File.readlines('calls.jsonl').map { |line| JSON.parse(line) }).to eq([commands, commands])
+    end
+  end
+
+  def run_erbtex(*arguments, env: {})
     root = File.expand_path('../..', __dir__)
     Open3.capture3(
+      env,
       RbConfig.ruby,
       "-I#{File.join(root, 'lib')}",
       File.join(root, 'bin', 'erbtex'),
-      flag,
+      *arguments,
     )
   end
 

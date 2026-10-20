@@ -9,17 +9,8 @@ module ErbTeX
     attr_reader :erbtex_name, :tex_program, :tex_args, :tex_commands, :input_file, :print_version, :print_help
 
     def initialize(argv)
-      # NOTE: argv will be the command line arguments after processing by the
-      # shell, so if we see things such as '&', '~', '\' in the args, these
-      # were quoted by the user on the command-line and need no special
-      # treatment here. For example, '~/junk' on the commandline will show up
-      # here as '/home/ded/junk'. If we see '~/junk', that means the user has
-      # quoted the ~ on the command line with something like '\~junk', so we
-      # should assume that the user wants to keep it that way. Likewise, an
-      # arg with spaces in it will have been quoted by the user to be seen as
-      # a single argument.  When we output these for use by the shell in the
-      # system command, we should apply shellquote to everything so that the
-      # receiving shell sees the args in the same way.
+      # Arguments have already been split by the shell. Preserve each string
+      # unchanged and pass it directly to the TeX process.
 
       @erbtex_name = File.basename($PROGRAM_NAME)
 
@@ -30,7 +21,7 @@ module ErbTeX
         # commands, even if they don't start with '\'
         @tex_commands = argv.drop_while { |a| a !~ /\A\\/ }
         first_tex_command_k = argv.size - @tex_commands.size
-        argv = argv[0..first_tex_command_k - 1]
+        argv = argv.take(first_tex_command_k)
       end
 
       # Look for our --invoke=tex_command option
@@ -66,11 +57,7 @@ module ErbTeX
     end
 
     def tex_command(tex_file = input_file)
-      "#{tex_program} " \
-        "#{tex_args.shelljoin} " \
-        "#{tex_commands.shelljoin} " \
-        "#{tex_file}"
-        .strip.squeeze(' ')
+      [tex_program, *tex_args, tex_file, *tex_commands].compact
     end
   end
 end

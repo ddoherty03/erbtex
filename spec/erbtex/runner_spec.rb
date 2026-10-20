@@ -28,6 +28,26 @@ describe ErbTeX do
       expect(Dir.children('.')).to contain_exactly('file.tex.erb', 'file.tex')
     end
 
+    it 'reports the input path and line number for a template syntax error' do
+      Dir.mkdir('templates')
+      File.write('templates/my document.tex.erb', "first line\nsecond line\n{: ) :}\n")
+
+      _, stderr, status = run_erbtex('templates/my document.tex.erb')
+
+      expect(status.exitstatus).to eq(1)
+      expect(stderr).to include('Erubis pre-processing failed:', 'templates/my document.tex.erb:3')
+    end
+
+    it 'identifies the input path and line number in a template runtime backtrace' do
+      Dir.mkdir('templates')
+      File.write('templates/my document.tex.erb', "first line\nsecond line\n{: raise 'template failed' :}\n")
+
+      _, stderr, status = run_erbtex('templates/my document.tex.erb')
+
+      expect(status.exitstatus).to eq(1)
+      expect(stderr).to include('template failed', 'templates/my document.tex.erb:3')
+    end
+
     it 'preserves existing output when the template raises an exception' do
       File.write('file.tex.erb', '{: raise "template failed" :}')
       File.write('file.tex', 'previous output')

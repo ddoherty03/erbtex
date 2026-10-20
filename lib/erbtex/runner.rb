@@ -121,7 +121,7 @@ module ErbTeX
     pat = ENV['ERBTEX_PATTERN'] || '{: :}'
 
     out_file = ErbTeX.out_file_name(in_file)
-    rendered = ::Erubis::Eruby.new(in_contents, pattern: pat).result
+    rendered = ::Erubis::Eruby.new(in_contents, pattern: pat, filename: in_file).result
     warn "  Erubis writing to #{out_file}..."
     # Keep the temporary file beside its destination so rename is atomic.
     Tempfile.create([".#{File.basename(out_file)}-", '.tmp'], File.dirname(out_file)) do |f|

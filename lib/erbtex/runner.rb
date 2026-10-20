@@ -7,20 +7,17 @@ require 'English'
 # Name space module for erbtex program.
 module ErbTeX
   # Perform the erubis pre-processing and the TeX processing on the input
-  # file.
+  # file. Return an exit status; preprocessing errors propagate to the caller.
   def self.run(cmd_line)
-    if cmd_line.print_version
-      report_version
-      exit(0)
-    end
+    return report_version if cmd_line.print_version
+
     if cmd_line.print_help
       report_help
-      exit(0)
+      return 0
     end
 
     if cmd_line.preprocess_only && !cmd_line.input_file
-      warn 'Error: --preprocess-only requires an input file'
-      exit(1)
+      raise NoInputFile, '--preprocess-only requires an input file'
     end
 
     in_dir = parse_file_name(cmd_line.input_file)[:dir] if cmd_line.input_file
@@ -37,9 +34,10 @@ module ErbTeX
       erubis_version = %x(erubis -v)
     rescue Errno::ENOENT
       warn 'Warning: erubis does not appear to be installed!'
-      exit(1)
+      return 1
     end
     puts "erubis version: #{erubis_version}"
+    0
   end
 
   # Display the help for erbtex.
@@ -90,14 +88,14 @@ module ErbTeX
     warn "TEXINPUTS set to: #{new_env['TEXINPUTS']}"
     unless system(new_env, [cmd.first, cmd.first], *cmd.drop(1))
       warn "Call to '#{cmd.shelljoin}' failed."
-      exit($CHILD_STATUS.exitstatus || 128 + $CHILD_STATUS.termsig)
+      return $CHILD_STATUS.exitstatus || 128 + $CHILD_STATUS.termsig
     end
     # Run a second time unless its latexmk
     unless File.basename(cmd.first) == 'latexmk'
       warn "TEXINPUTS set to: #{new_env['TEXINPUTS']}"
       unless system(new_env, [cmd.first, cmd.first], *cmd.drop(1))
         warn "Call to '#{cmd.shelljoin}' failed."
-        exit($CHILD_STATUS.exitstatus || 128 + $CHILD_STATUS.termsig)
+        return $CHILD_STATUS.exitstatus || 128 + $CHILD_STATUS.termsig
       end
     end
     $CHILD_STATUS.exitstatus
@@ -111,7 +109,7 @@ module ErbTeX
     warn '================================================================'
     warn 'Erubis phase of processing ...'
     # Add input to ruby LOAD_PATH, $:,if its not already there.
-    if File.exist?(in_dir)
+    if in_dir && File.exist?(in_dir)
       in_dir = File.absolute_path(File.expand_path(in_dir))
       unless $LOAD_PATH
                .any? { |p| in_dir == File.absolute_path(File.expand_path(p)) }
@@ -141,11 +139,5 @@ module ErbTeX
     warn 'done'
     warn '================================================================'
     out_file
-  rescue SystemCallError => e
-    warn "Error: #{e}"
-    exit 1
-  rescue ScriptError => e
-    warn "Erubis pre-processing failed: #{e}"
-    exit 1
   end
 end

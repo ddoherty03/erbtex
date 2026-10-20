@@ -12,6 +12,15 @@ module ErbTeX
     exit(1)
   end
 
-  cl = CommandLine.new(ARGV)
-  exit ErbTeX.run(cl)
+  begin
+    cl = CommandLine.new(ARGV)
+    status = ErbTeX.run(cl)
+  rescue SystemCallError, ArgumentError, NoInputFile => e
+    warn "Error: #{e}"
+    status = 1
+  rescue ScriptError => e
+    warn "Erubis pre-processing failed: #{e}"
+    status = 1
+  end
+  exit status
 end

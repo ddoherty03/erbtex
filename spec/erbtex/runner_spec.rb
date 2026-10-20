@@ -7,6 +7,32 @@ require 'tmpdir'
 require 'json'
 
 describe ErbTeX do
+  describe '.run' do
+    before do
+      allow(described_class).to receive(:puts)
+      allow(described_class).to receive(:warn)
+    end
+
+    it 'returns success for help without terminating its caller' do
+      expect(described_class.run(ErbTeX::CommandLine.new(['--help']))).to eq(0)
+    end
+
+    it 'returns success for version information without terminating its caller' do
+      expect(described_class.run(ErbTeX::CommandLine.new(['--version']))).to eq(0)
+    end
+
+    it 'raises a recoverable error when preprocess-only has no input file' do
+      expect { described_class.run(ErbTeX::CommandLine.new(['--preprocess-only'])) }
+        .to raise_error(ErbTeX::NoInputFile, '--preprocess-only requires an input file')
+    end
+
+    it 'returns the TeX failure status without terminating its caller' do
+      cl = ErbTeX::CommandLine.new(["--invoke=#{RbConfig.ruby}", '-e', 'exit 7', '--', '\\relax'])
+
+      expect(described_class.run(cl)).to eq(7)
+    end
+  end
+
   describe '.erb_to_tex' do
     before do
       allow(described_class).to receive(:warn)
@@ -23,7 +49,7 @@ describe ErbTeX do
       File.write('file.tex', 'previous output')
 
       expect { described_class.erb_to_tex('file.tex.erb', '') }
-        .to raise_error(SystemExit) { |error| expect(error.status).to eq(1) }
+        .to raise_error(SyntaxError)
       expect(File.read('file.tex')).to eq('previous output')
       expect(Dir.children('.')).to contain_exactly('file.tex.erb', 'file.tex')
     end
@@ -56,6 +82,17 @@ describe ErbTeX do
         .to raise_error(RuntimeError, 'template failed')
       expect(File.read('file.tex')).to eq('previous output')
       expect(Dir.children('.')).to contain_exactly('file.tex.erb', 'file.tex')
+    end
+
+    it 'raises a recoverable filesystem error for missing input' do
+      expect { described_class.erb_to_tex('missing.tex.erb') }.to raise_error(Errno::ENOENT)
+    end
+
+    it 'reports missing input as a CLI failure' do
+      _, stderr, status = run_erbtex('--preprocess-only', 'missing.tex.erb')
+
+      expect(status.exitstatus).to eq(1)
+      expect(stderr).to include('Error:', 'missing.tex.erb')
     end
 
     it 'replaces existing output after rendering successfully and removes the temporary file' do

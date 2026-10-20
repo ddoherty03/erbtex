@@ -4,6 +4,7 @@ require './lib/erbtex/version'
 
 Gem::Specification.new do |gem|
   gem.name = 'erbtex'
+  gem.license = 'MIT'
   gem.version = ErbTeX::VERSION
   gem.platform = Gem::Platform::RUBY
   gem.homepage = 'https://github.com/ddoherty03/erbtex'

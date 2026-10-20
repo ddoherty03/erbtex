@@ -1,4 +1,15 @@
 require "bundler/gem_tasks"
+
+# Installing into the user's gems must not inherit this project's bundle.
+# RubyGems plugins (notably RDoc) may require dependencies outside that bundle.
+module UnbundledGemInstallation
+  def install_gem(*args)
+    Bundler.with_unbundled_env { super }
+  end
+end
+
+Bundler::GemHelper.prepend(UnbundledGemInstallation)
+
 require "rspec/core/rake_task"
 
 require 'rdoc/task'

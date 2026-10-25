@@ -10,3 +10,5 @@ auto
 *.fls
 *.erb
 *.etx
+/.yardoc/
+/doc/

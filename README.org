@@ -6,20 +6,34 @@
 #+PROPERTY: header-args:bash :exports code :eval no
 #+PROPERTY: header-args:latex :exports code :eval no
 
-* ErbTeX: Ruby pre-processing for TeX and LaTeX Documents
-** Description
+# gem_docs:version begin
+Version: 0.5.0
+# gem_docs:version end
+
+
+* Introduction
 ~erbtex~ is a ruby gem that provides the ~erbtex~ command line program that
 pre-processes TeX and LaTeX source files with ruby's [[http://www.kuwata-lab.com/erubis][erubis]] and then passes
-the resulting file along to a real TeX program.
+the resulting file along to a real TeX program for compilation.  This
+allows your TeX or LaTeX documents to do arbitrary calculations using
+Ruby code when doing so in LaTeX would be infeasible.
 
-** Installation
+For example, the [[file:examples/TrigTable.tex][trigonometry table source]] uses Ruby to compute
+and format the values, while LaTeX lays out the table across multiple pages.
+[[file:examples/TrigTable.pdf][View the typeset output (PDF)]] for the complete 32-page table.
+
+Here is an excerpt from the first page:
+
+[[file:examples/TrigTable-preview.png]]
+
+* Installation
 Install ~erbtex~ with:
 
 #+BEGIN_SRC sh
   gem install erbtex
 #+END_SRC
 
-** Usage
+* Usage
 After the gem is installed, ~erbtex~ is placed in your PATH. ~erbtex~
 recognizes only one command-line option, ~--invoke=<tex_program>~, which
 specifies what TeX variant will process the TeX file after erubis has
@@ -178,3 +192,4 @@ small [[file:examples/TrigTable2.tex][input file]].
 It makes good use of ruby to define a Dms class that handles angles
 expressed as degrees, minutes, and seconds---a feat that would be very
 difficult to achieve with LaTeX also.
+* ErbTeX: Ruby pre-processing for TeX and LaTeX Documents

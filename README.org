@@ -195,7 +195,7 @@ small [[file:examples/TrigTable2.tex][input file]].
 
 It makes good use of ruby to define a Dms class that handles angles
 expressed as degrees, minutes, and seconds---a feat that would be very
-difficult to achieve with LaTeX also.
+difficult to achieve with LaTeX alone.
 
 Here is an excerpt from the first page of the
 [[file:examples/TrigTable2.pdf][complete typeset table (PDF)]]:
